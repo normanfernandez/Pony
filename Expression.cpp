@@ -10,8 +10,7 @@
  * Implementation of functions used to build the syntax tree.
  */
 
-#include "Expression.h"
-
+#include "Expression.hpp"
 #include <stdlib.h>
 
 /**
@@ -20,7 +19,7 @@
  */
 static SExpression *allocateExpression()
 {
-    SExpression *b = (SExpression *)malloc(sizeof(SExpression));
+    SExpression *b = new SExpression;
 
     if (b == NULL)
         return NULL;
@@ -69,5 +68,5 @@ void deleteExpression(SExpression *b)
     deleteExpression(b->left);
     deleteExpression(b->right);
 
-    free(b);
+    delete b;
 }

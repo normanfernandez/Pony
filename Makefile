@@ -1,6 +1,6 @@
 FILES	= Lexer.cpp Parser.cpp Expression.cpp main.cpp
 CC	= g++
-CFLAGS	= -g -ansi
+CFLAGS	= -g
   
 test:		$(FILES)
 		$(CC) $(CFLAGS) $(FILES) -o test.exe
@@ -12,4 +12,4 @@ Parser.cpp:	Parser.y Lexer.cpp
 		win_bison Parser.y
  
 clean:
-		del *.o Lexer.cpp Lexer.h Parser.cpp Parser.h 
+		rm *.o Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp text.exe

@@ -2,9 +2,9 @@
  * main.c file
  */
 
-#include "Expression.h"
-#include "Parser.h"
-#include "Lexer.h"
+#include "Expression.hpp"
+#include "Parser.hpp"
+#include "Lexer.hpp"
 
 #include <stdio.h>
 
@@ -25,6 +25,7 @@ SExpression *getAST(const char *expr)
 
     if (yyparse(&expression, scanner)) {
         // error parsing
+    	fputs("Error con la expresion", stderr);
         return NULL;
     }
 
@@ -42,6 +43,10 @@ int evaluate(SExpression *e)
             return e->value;
         case eMULTIPLY:
             return evaluate(e->left) * evaluate(e->right);
+        case eDIVIDE:
+        	return evaluate(e->left) / evaluate(e->right);
+        case eSUBTRACT:
+        	return evaluate(e->left) - evaluate(e->right);
         case ePLUS:
             return evaluate(e->left) + evaluate(e->right);
         default:
@@ -53,7 +58,7 @@ int evaluate(SExpression *e)
 int main(void)
 {
     SExpression *e = NULL;
-    char test[]="4+2*(5+3)";
+    char test[]="10/2-3";
     int result = 0;
 
     e = getAST(test);
