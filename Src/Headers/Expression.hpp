@@ -4,6 +4,7 @@
  */
 #ifndef __EXPRESSION_H__
 #define __EXPRESSION_H__
+#include "BigInteger.hpp"
 
 /**
  * @brief The operation type
@@ -11,6 +12,7 @@
 typedef enum tagEOperationType
 {
     eVALUE,
+    eSTRING,
     eSUBTRACT,
     eMULTIPLY,
     eDIVIDE,
@@ -23,8 +25,8 @@ typedef enum tagEOperationType
 typedef struct tagSExpression
 {
     EOperationType type;///< type of operation
-
-    int value;///< valid only when type is eVALUE
+    char * string;
+    BigInteger * value;///< valid only when type is eVALUE
     struct tagSExpression *left; ///< left side of the tree
     struct tagSExpression *right;///< right side of the tree
 } SExpression;
@@ -34,7 +36,7 @@ typedef struct tagSExpression
  * @param value The number value
  * @return The expression or NULL in case of no memory
  */
-SExpression *createNumber(int value);
+SExpression *createNumber(BigInteger * value);
 
 /**
  * @brief It creates an operation

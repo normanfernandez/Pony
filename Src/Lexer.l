@@ -1,15 +1,16 @@
 %{
  
-#include "Expression.hpp"
-#include "Parser.hpp"
+#include "Headers/Expression.hpp"
+#include "Headers/Parser.hpp"
  
 #include <stdio.h>
- 
+
+struct YYLTYPE;
 %}
  
-%option outfile="Lexer.cpp" header-file="Lexer.hpp"
-%option warn nodefault
-%option reentrant noyywrap never-interactive nounistd
+%option outfile="Src/Lexer.cpp" header-file="Src/Headers/Lexer.hpp"
+%option noyywrap warn nodefault
+%option never-interactive nounistd
 %option bison-bridge
  
 LPAREN      "("
@@ -20,7 +21,7 @@ MULTIPLY    "*"
 SLASH		"/"
 SEMICOLON	";"
 QUOTATION	["]
-PRINT		"print"
+SINGLE		[']
 
 LETTER		[a-zA-Z]
 CHARSET		[a-zA-Z0-9]+ 
@@ -31,12 +32,13 @@ ID 			{LETTER}{CHARSET | NUMBER}*
 %%
  
 {WS}            { /* Skip blanks. */ }
-{NUMBER}        { sscanf(yytext, "%d", &yylval->value); return TOKEN_NUMBER; }
+{NUMBER}        { return TOKEN_NUMBER; }
 {SEMICOLON}		{ return TOKEN_SEMICOLON;}
 
-{PRINT}			{ return TOKEN_PRINT;}
 {QUOTATION}		{ return TOKEN_QUOTATION;}
+{SINGLE}		{ return TOKEN_SINGLE; }
 {MULTIPLY}      { return TOKEN_MULTIPLY; }
+{CHARSET}		{ return TOKEN_CHARSET; }
 {PLUS}          { return TOKEN_PLUS; }
 {SLASH}			{ return TOKEN_SLASH; }
 {MINUS}			{ return TOKEN_MINUS;}
@@ -45,7 +47,3 @@ ID 			{LETTER}{CHARSET | NUMBER}*
 .               {  }
  
 %%
- 
-int yyerror(const char *msg) {
-    fprintf(stderr,"Error:%s\n",msg); return 0;
-}
