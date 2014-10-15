@@ -1,20 +1,16 @@
 %{
  
-#include "Headers/Expression.hpp"
-#include "Headers/BigInteger.hpp"
-#include "Headers/Parser.hpp"
-#include "Headers/Lexer.hpp"
-
-extern "C"
-{
-	int yyparse(void);
-    void yyerror(char *s){}
-    int yywrap(void){return 1;}
-}
+/*
+ * Parser.y file
+ * To generate the parser run: "bison Parser.y"
+ */
  
-void yyerror(SExpression **expression, yyscan_t scanner, const char *msg) {
+#include "Expression.hpp"
+#include "Parser.hpp"
+#include "Lexer.hpp"
+ 
+int yyerror(SExpression **expression, yyscan_t scanner, const char *msg) {
     // Add error handling routine as needed
-    fprintf(stderr, "%s\n", msg);
 }
  
 %}
@@ -24,13 +20,12 @@ void yyerror(SExpression **expression, yyscan_t scanner, const char *msg) {
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 typedef void* yyscan_t;
-struct YYLTYPE;
 #endif
-
+ 
 }
  
-%output  "Src/Parser.cpp"
-%defines "Src/Headers/Parser.hpp"
+%output  "Parser.cpp"
+%defines "Parser.hpp"
  
 %define api.pure
 %lex-param   { yyscan_t scanner }
@@ -38,8 +33,7 @@ struct YYLTYPE;
 %parse-param { yyscan_t scanner }
  
 %union {
-    BigInteger * value;
-    char * id;
+    int value;
     SExpression *expression;
 }
  
@@ -50,14 +44,12 @@ struct YYLTYPE;
 %token TOKEN_RPAREN
 %token TOKEN_PLUS
 %token TOKEN_SEMICOLON
-%token TOKEN_SINGLE
 %token TOKEN_PRINT
 %token TOKEN_QUOTATION
 %token TOKEN_SLASH
 %token TOKEN_MINUS
 %token TOKEN_MULTIPLY
 %token <value> TOKEN_NUMBER
-%token <id> TOKEN_CHARSET
  
 %type <expression> expr
  
@@ -66,7 +58,7 @@ struct YYLTYPE;
 input
     : expr { *expression = $1; }
     ;
-
+ 
 expr
     : expr[L] TOKEN_PLUS expr[R] { $$ = createOperation( ePLUS, $L, $R ); }
     | expr[L] TOKEN_MULTIPLY expr[R] { $$ = createOperation( eMULTIPLY, $L, $R ); }

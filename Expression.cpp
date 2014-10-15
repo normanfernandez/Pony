@@ -5,11 +5,13 @@
  *      Author: Norman
  */
 
-#include "Headers/Expression.hpp"
-#include <string>
-#include <cstdlib>
+/*
+ * Expression.c
+ * Implementation of functions used to build the syntax tree.
+ */
 
-using namespace std;
+#include "Expression.hpp"
+#include <stdlib.h>
 
 /**
  * @brief Allocates space for expression
@@ -23,7 +25,7 @@ static SExpression *allocateExpression()
         return NULL;
 
     b->type = eVALUE;
-    b->value = NULL;
+    b->value = 0;
 
     b->left = NULL;
     b->right = NULL;
@@ -31,7 +33,7 @@ static SExpression *allocateExpression()
     return b;
 }
 
-SExpression *createNumber(BigInteger * value)
+SExpression *createNumber(int value)
 {
     SExpression *b = allocateExpression();
 
@@ -39,7 +41,7 @@ SExpression *createNumber(BigInteger * value)
         return NULL;
 
     b->type = eVALUE;
-    b->value = new BigInteger(value->getNumber());
+    b->value = value;
 
     return b;
 }

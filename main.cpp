@@ -2,15 +2,13 @@
  * main.c file
  */
 
-#include "Headers/Expression.hpp"
-#include "Headers/FileRead.hpp"
-#include "Headers/Parser.hpp"
-#include "Headers/Lexer.hpp"
-#include <iostream>
+#include "Expression.hpp"
+#include "Parser.hpp"
+#include "Lexer.hpp"
 
-using namespace std;
+#include <stdio.h>
 
-extern int yylex_init(yyscan_t);
+int yyparse(SExpression **expression, yyscan_t scanner);
 
 SExpression *getAST(const char *expr)
 {
@@ -23,26 +21,26 @@ SExpression *getAST(const char *expr)
         return NULL;
     }
 
-    state = yy_scan_string(expr);
+    state = yy_scan_string(expr, scanner);
 
     if (yyparse(&expression, scanner)) {
         // error parsing
-    	cerr << "Error con la expresion" << endl;
+    	fputs("Error con la expresion", stderr);
         return NULL;
     }
 
-    yy_delete_buffer(state);
+    yy_delete_buffer(state, scanner);
 
-    //yylex_destroy(scanner);
+    yylex_destroy(scanner);
 
     return expression;
 }
 
-BigInteger evaluate(SExpression *e)
+int evaluate(SExpression *e)
 {
     switch (e->type) {
         case eVALUE:
-            return *(e->value);
+            return e->value;
         case eMULTIPLY:
             return evaluate(e->left) * evaluate(e->right);
         case eDIVIDE:
@@ -53,18 +51,21 @@ BigInteger evaluate(SExpression *e)
             return evaluate(e->left) + evaluate(e->right);
         default:
             // shouldn't be here
-            return *(new BigInteger());
+            return 0;
     }
 }
 
 int main(void)
 {
     SExpression *e = NULL;
-    char test[]= "100000000*908098879879743";
+    char test[]="10/2-3";
+    int result = 0;
 
     e = getAST(test);
 
-    cout << "El resultado de " << test << " es: " << evaluate(e).getNumber() << endl;
+    result = evaluate(e);
+
+    printf("Result of '%s' is %d\n", test, result);
 
     deleteExpression(e);
 
