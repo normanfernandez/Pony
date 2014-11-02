@@ -1,51 +1,25 @@
 %{
- 
-#include "Expression.hpp"
-#include "Parser.hpp"
- 
-#include <stdio.h>
- 
+#include <iostream>
+#include "Parser.tab.hh"
+using namespace std;
+int line_number = 1;
+#define YY_DECL extern "C" int yylex()
 %}
- 
-%option outfile="Lexer.cpp" header-file="Lexer.hpp"
-%option warn nodefault
-%option reentrant noyywrap never-interactive nounistd
-%option bison-bridge
- 
-LPAREN      "("
-RPAREN      ")"
-PLUS        "+"
-MINUS		"-"
-MULTIPLY    "*"
-SLASH		"/"
-SEMICOLON	";"
-QUOTATION	["]
-PRINT		"print"
-
-LETTER		[a-zA-Z]
-CHARSET		[a-zA-Z0-9]+ 
-NUMBER      [0-9]+
-WS          [ \r\n\t]*
-ID 			{LETTER}{CHARSET | NUMBER}*
- 
 %%
- 
-{WS}            { /* Skip blanks. */ }
-{NUMBER}        { sscanf(yytext, "%d", &yylval->value); return TOKEN_NUMBER; }
-{SEMICOLON}		{ return TOKEN_SEMICOLON;}
-
-{PRINT}			{ return TOKEN_PRINT;}
-{QUOTATION}		{ return TOKEN_QUOTATION;}
-{MULTIPLY}      { return TOKEN_MULTIPLY; }
-{PLUS}          { return TOKEN_PLUS; }
-{SLASH}			{ return TOKEN_SLASH; }
-{MINUS}			{ return TOKEN_MINUS;}
-{LPAREN}        { return TOKEN_LPAREN; }
-{RPAREN}        { return TOKEN_RPAREN; }
-.               {  }
- 
-%%
- 
-int yyerror(const char *msg) {
-    fprintf(stderr,"Error:%s\n",msg); return 0;
+[ \t]          { return WS;}
+begin		{ return TOKEN_BEGIN; }
+end            { return END; }
+print        { return PRINT; }
+var           { return VAR; }
+[0-9]+\.[0-9]+ { yylval.fval = atof(yytext); return FLOAT; }
+[0-9]+         { yylval.ival = atoi(yytext); return INT; }
+[a-zA-Z0-9]+   {
+	// we have to copy because we can't rely on yytext not changing underneath us:
+	yylval.sval = strdup(yytext);
+	return STRING;
 }
+\"			{return QUOTATION;}
+;			{return SEMICOLON;}
+\n             {++line_number; return ENDL;}
+.              ;
+%%

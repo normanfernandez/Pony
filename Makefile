@@ -2,14 +2,14 @@ FILES	= Lexer.cpp Parser.cpp Expression.cpp main.cpp
 CC	= g++
 CFLAGS	= -g
   
-test:		$(FILES)
-		$(CC) $(CFLAGS) $(FILES) -o test.exe
+default: Parser.tab.cc lex.yy.c
+		$(CC) Parser.tab.cc lex.yy.c -lfl -o pony
  
-Lexer.cpp:	Lexer.l 
+lex.yy.c:	Lexer.l 
 		flex Lexer.l
  
-Parser.cpp:	Parser.y Lexer.cpp
-		win_bison Parser.y
+Parser.tab.cc:	Parser.yy
+		bison Parser.yy -d
  
 clean:
-		rm *.o Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp text.exe
+		rm Parser.tab.* lex.yy.c pony
