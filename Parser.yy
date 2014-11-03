@@ -22,11 +22,13 @@ void yyerror(const char *s);
 %token TOKEN_BEGIN
 %token END 
 %token ENDL
-%token PRINT 
+%token LPAREN RPAREN
+%token TOKEN_PRINT
+%token PONY 
 %token VAR
-%token QUOTATION
 %token SEMICOLON
 %token WS
+%token PLUS '+'
 
 // define the "terminal symbol" token types I'm going to use (in CAPS
 // by convention), and associate each with a field of the union:
@@ -37,26 +39,38 @@ void yyerror(const char *s);
 
 %%
 pony:
-	TOKEN_BEGIN body_section END { cout << "done with a pony file!" << endl; }
+	TOKEN_BEGIN body footer { cout << "done with a pony file!" << endl; }
 	;
-
-body_section:
-	body_lines ENDL
+	
+body:
+	body body_line
+	| nothing
 	| ENDL
 	| WS
 	;
 	
-body_lines:
-	body_lines body_line
-	| body_line
+body_line:
+	exp SEMICOLON
+	;
+
+exp: 
+	TOKEN_PRINT LPAREN STRING RPAREN {cout << $3 << " pony!" << endl;}
+	| VAR LPAREN RPAREN  {cout << "se encontro var" << endl; }
+	| PONY LPAREN RPAREN { cout << "Pony Version 0.1.1" << endl; }
+	;
+
+footer:
+	footer END
+	| endls
+	| END
+	;
+
+endls:
+	endls ENDL
 	| ENDL
 	;
-	
-body_line:
-	| PRINT '(' ')' SEMICOLON {cout << "llamando funcion print"<< endl;}
-	| VAR '(' ')' SEMICOLON {cout << "se encontro var" << endl;}
-	| SEMICOLON {;}
-	| WS {;}
+
+nothing:
 	;
 
 %%

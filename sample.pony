@@ -1,3 +1,1 @@
-begin 
-print();
-end
+begin print('mi nombre es norman'); print('y esto funciona'); end
