@@ -44,33 +44,32 @@ pony:
 	
 body:
 	body body_line
-	| nothing
-	| ENDL
-	| WS
+	| body_line
+	| body endls
+	| endls
 	;
 	
 body_line:
 	exp SEMICOLON
+	| endls body_line
 	;
 
 exp: 
-	TOKEN_PRINT LPAREN STRING RPAREN {cout << $3 << " pony!" << endl;}
-	| VAR LPAREN RPAREN  {cout << "se encontro var" << endl; }
-	| PONY LPAREN RPAREN { cout << "Pony Version 0.1.1" << endl; }
+		TOKEN_PRINT LPAREN STRING RPAREN {cout << $3 << " pony!" << endl;}
+	|	TOKEN_PRINT LPAREN INT RPAREN {cout << $3 << " integer!" << endl;}
+	|	TOKEN_PRINT LPAREN FLOAT RPAREN {cout << $3 << " float!" << endl;}
+	|	VAR LPAREN RPAREN  {cout << "se encontro var" << endl; }
+	|	PONY LPAREN RPAREN { cout << "Pony Version 0.1.1" << endl; }
 	;
 
 footer:
-	footer END
-	| endls
+END endls
 	| END
 	;
 
 endls:
 	endls ENDL
 	| ENDL
-	;
-
-nothing:
 	;
 
 %%

@@ -1,1 +1,4 @@
-begin print('mi nombre es norman'); print('y esto funciona'); end
+begin 
+	print(3.14); print(42);
+	print('y esto funciona');
+end 			  	
