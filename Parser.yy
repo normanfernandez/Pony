@@ -1,6 +1,7 @@
 %{
 #include <cstdio>
 #include <iostream>
+#define PONY_VERSION "Pony Version 0.2.1"
 using namespace std;
 
 // stuff from flex that bison needs to know about:
@@ -18,17 +19,27 @@ void yyerror(const char *s);
 	char *sval;
 }
 
-// define the constant-string tokens:
+// define the keywords token:
 %token TOKEN_BEGIN
 %token END 
 %token ENDL
-%token LPAREN RPAREN
 %token TOKEN_PRINT
 %token PONY 
 %token VAR
+%token TYPE_BYTE
+%token TYPE_SHORT
+%token TYPE_INT
+%token TYPE_LONG
+
+%token LESS_TOKEN
+%token GREATER_TOKEN
+%token LPAREN
+%token RPAREN
 %token SEMICOLON
 %token WS
-%token PLUS '+'
+
+%left '+' '-'
+%left '*' '/' '%'
 
 // define the "terminal symbol" token types I'm going to use (in CAPS
 // by convention), and associate each with a field of the union:
@@ -36,46 +47,58 @@ void yyerror(const char *s);
 %token <fval> FLOAT
 %token <sval> STRING
 
-
+//%token TOKEN_ID
 %%
 pony:
-	TOKEN_BEGIN body footer { cout << "done with a pony file!" << endl; }
+		TOKEN_BEGIN body footer { cout << "done with a pony file!" << endl; }
 	;
 	
 body:
-	body body_line
-	| body_line
-	| body endls
-	| endls
+		body body_line
+	| 	body_line
+	| 	body endls
+	| 	endls
 	;
 	
 body_line:
-	exp SEMICOLON
-	| endls body_line
+		exp SEMICOLON
+	| 	endls body_line
 	;
 
 exp: 
 		TOKEN_PRINT LPAREN STRING RPAREN {cout << $3 << " pony!" << endl;}
-	|	TOKEN_PRINT LPAREN INT RPAREN {cout << $3 << " integer!" << endl;}
+	|	TOKEN_PRINT LPAREN NUMBER_OP RPAREN {cout << $<ival>3 << " integer!" << endl;}
 	|	TOKEN_PRINT LPAREN FLOAT RPAREN {cout << $3 << " float!" << endl;}
-	|	VAR LPAREN RPAREN  {cout << "se encontro var" << endl; }
-	|	PONY LPAREN RPAREN { cout << "Pony Version 0.1.1" << endl; }
+	|	int_types {cout << $<sval>1 << " type!" << endl;}
+	|	PONY LPAREN RPAREN { cout << PONY_VERSION << endl; }
 	;
 
+NUMBER_OP:
+		NUMBER_OP '+' NUMBER_OP {$<ival>$ = $<ival>1 + $<ival>2;}
+	|	INT
+	;
+
+int_types:
+		TYPE_BYTE 
+	|	TYPE_SHORT 
+	|	TYPE_INT 
+	|	TYPE_LONG
+	;
+	
 footer:
-END endls
-	| END
+		END endls
+	| 	END
 	;
 
 endls:
-	endls ENDL
-	| ENDL
+		endls ENDL
+	| 	ENDL
 	;
 
 %%
 
 int main(int argc, char * argv[]) {
-	if(argc < 1)
+	if(argc <= 1)
 	{
 		cerr << "No input file detected!" << endl;
 		return	1;
