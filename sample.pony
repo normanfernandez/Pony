@@ -1,3 +1,5 @@
 begin
-int;
-end
+	var(long) _pony;
+	var(int) _pony;
+	pony();
+end			 

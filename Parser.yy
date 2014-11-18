@@ -1,7 +1,9 @@
 %{
 #include <cstdio>
 #include <iostream>
-#define PONY_VERSION "Pony Version 0.2.1"
+#include "PonyCore.h"
+#include "PonyInt.h"
+#define PONY_VERSION "Pony Version 0.2.2"
 using namespace std;
 
 // stuff from flex that bison needs to know about:
@@ -25,14 +27,15 @@ void yyerror(const char *s);
 %token ENDL
 %token TOKEN_PRINT
 %token PONY 
-%token VAR
+%token TOKEN_VAR
 %token TYPE_BYTE
 %token TYPE_SHORT
 %token TYPE_INT
 %token TYPE_LONG
 
-%token LESS_TOKEN
-%token GREATER_TOKEN
+%token TOKEN_LESS
+%token TOKEN_GREATER
+%token TOKEN_EQUAL
 %token LPAREN
 %token RPAREN
 %token SEMICOLON
@@ -47,8 +50,9 @@ void yyerror(const char *s);
 %token <fval> FLOAT
 %token <sval> STRING
 
-//%token TOKEN_ID
+%token TOKEN_ID
 %%
+
 pony:
 		TOKEN_BEGIN body footer { cout << "done with a pony file!" << endl; }
 	;
@@ -57,20 +61,53 @@ body:
 		body body_line
 	| 	body_line
 	| 	body endls
-	| 	endls
 	;
 	
 body_line:
 		exp SEMICOLON
-	| 	endls body_line
+	|	endls body_line
 	;
 
 exp: 
-		TOKEN_PRINT LPAREN STRING RPAREN {cout << $3 << " pony!" << endl;}
+		TOKEN_PRINT LPAREN STRING RPAREN {cout << $3 << endl;}
 	|	TOKEN_PRINT LPAREN NUMBER_OP RPAREN {cout << $<ival>3 << " integer!" << endl;}
 	|	TOKEN_PRINT LPAREN FLOAT RPAREN {cout << $3 << " float!" << endl;}
-	|	int_types {cout << $<sval>1 << " type!" << endl;}
-	|	PONY LPAREN RPAREN { cout << PONY_VERSION << endl; }
+	|	TOKEN_PRINT LPAREN TOKEN_ID RPAREN 
+		{
+			cout << "Se lee " << $<sval>3 << endl;
+			cout << "de tamano: " << (int)int_list[$<sval>3]->size << endl;
+				if(int_list[$<sval>3] != nullptr) 
+					yyerror("variable not declared!\n");
+			cout << getInteger(int_list[yylval.sval]) << endl;
+		}
+	|	declaration
+	|	pony_version	
+	|	assingment
+	;
+
+declaration:
+		TOKEN_VAR LPAREN int_types RPAREN TOKEN_ID 
+		{ 
+			if(int_list[$<sval>5]) 
+				yyerror("variable already declared!\n");
+			int_list[yylval.sval] = allocateInteger($<ival>3);
+		}
+	;
+
+pony_version:
+		PONY LPAREN RPAREN { cout << PONY_VERSION << endl; }
+	;
+
+assingment: 
+		TOKEN_ID TOKEN_EQUAL
+		{
+			cerr << "debug!\n";
+			if(int_list[$<sval>1] != nullptr) 
+				yyerror("variable not declared!\n");
+			cout << "Valor inicial de " << $<sval>1 << " es " << getInteger(int_list[$<sval>1]) << endl;
+			
+			cout << "Valor final de " << $<sval>1 << " es " << getInteger(int_list[$<sval>1]) << endl; 
+		}
 	;
 
 NUMBER_OP:
@@ -91,8 +128,8 @@ footer:
 	;
 
 endls:
-		endls ENDL
-	| 	ENDL
+	 	ENDL
+	|	ENDL endls
 	;
 
 %%
