@@ -13,15 +13,19 @@
 #include <string>
 #include <cstdlib>
 
-IntegerStruct * allocateInteger(pony_byte size){
-	IntegerStruct * int_struct = new IntegerStruct;
-	int_struct->size = size;
-	setInteger(&int_struct, 0);
-	return int_struct;
+extern "C" void yyerror(const char*);
+
+void allocateInteger(const char * var_label,pony_byte size){
+	if(int_list.find(var_label) != int_list.end()){
+		std::cerr << "variable already declared!" << std::endl;
+		exit(-1);
+	}
+	int_list[var_label] = new IntegerStruct;
+	int_list[var_label]->size = size;
+	setInteger(&int_list[var_label], 0);
 }
 
 std::string getInteger(IntegerStruct * int_struct){
-	std::string str;
 	std::ostringstream convert;
 	switch(int_struct->size){
 		case eBYTE:
@@ -40,8 +44,7 @@ std::string getInteger(IntegerStruct * int_struct){
 			convert << __getLong(int_struct->val);
 		break;
 	}
-	str = convert.str();
-	return str;
+	return convert.str();
 }
 
 void setInteger(IntegerStruct ** int_struct, intptr_t num){

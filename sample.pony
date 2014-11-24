@@ -1,5 +1,4 @@
 begin
-	var(long) _pony;
-	var(int) _pony;
+	read();
 	pony();
 end			 

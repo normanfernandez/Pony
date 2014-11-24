@@ -26,6 +26,7 @@ int line_number = 1;
 "long"					{ yylval.ival = eLONG; return TYPE_LONG; }
 "end"          			{ return END; }
 "print"        			{ return TOKEN_PRINT; }
+"read"					{ return TOKEN_READ; }
 "var"          			{ return TOKEN_VAR; }
 "pony"					{ return PONY; }
 [a-zA-Z_][a-zA-Z0-9_]+	{ yylval.sval = strdup(yytext); return TOKEN_ID;}

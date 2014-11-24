@@ -4,6 +4,7 @@
 #include "PonyCore.h"
 #include "PonyInt.h"
 #define PONY_VERSION "Pony Version 0.2.2"
+
 using namespace std;
 
 // stuff from flex that bison needs to know about:
@@ -26,6 +27,7 @@ void yyerror(const char *s);
 %token END 
 %token ENDL
 %token TOKEN_PRINT
+%token TOKEN_READ
 %token PONY 
 %token TOKEN_VAR
 %token TYPE_BYTE
@@ -71,14 +73,14 @@ body_line:
 exp: 
 		TOKEN_PRINT LPAREN STRING RPAREN {cout << $3 << endl;}
 	|	TOKEN_PRINT LPAREN NUMBER_OP RPAREN {cout << $<ival>3 << " integer!" << endl;}
+	|	TOKEN_READ LPAREN RPAREN { cin >> stdin_buffer; cout << "se escanea: " << stdin_buffer << endl;}
 	|	TOKEN_PRINT LPAREN FLOAT RPAREN {cout << $3 << " float!" << endl;}
 	|	TOKEN_PRINT LPAREN TOKEN_ID RPAREN 
 		{
 			cout << "Se lee " << $<sval>3 << endl;
-			cout << "de tamano: " << (int)int_list[$<sval>3]->size << endl;
-				if(int_list[$<sval>3] != nullptr) 
-					yyerror("variable not declared!\n");
-			cout << getInteger(int_list[yylval.sval]) << endl;
+			for(auto it = int_list.begin();
+				it != int_list.end(); it++)
+				cout << getInteger((*it).second) << endl;
 		}
 	|	declaration
 	|	pony_version	
@@ -88,9 +90,10 @@ exp:
 declaration:
 		TOKEN_VAR LPAREN int_types RPAREN TOKEN_ID 
 		{ 
-			if(int_list[$<sval>5]) 
+			if(int_list.find($<sval>5) != int_list.end()) 
 				yyerror("variable already declared!\n");
-			int_list[yylval.sval] = allocateInteger($<ival>3);
+			allocateInteger($<sval>1, $<ival>3);
+			cout << "Se declara " << $<sval>5 << " del tipo " << $<ival>3 << endl;   
 		}
 	;
 
@@ -99,14 +102,11 @@ pony_version:
 	;
 
 assingment: 
-		TOKEN_ID TOKEN_EQUAL
+		TOKEN_ID TOKEN_EQUAL TOKEN_ID
 		{
 			cerr << "debug!\n";
-			if(int_list[$<sval>1] != nullptr) 
+			if(int_list.find($<sval>1) == int_list.end()) 
 				yyerror("variable not declared!\n");
-			cout << "Valor inicial de " << $<sval>1 << " es " << getInteger(int_list[$<sval>1]) << endl;
-			
-			cout << "Valor final de " << $<sval>1 << " es " << getInteger(int_list[$<sval>1]) << endl; 
 		}
 	;
 

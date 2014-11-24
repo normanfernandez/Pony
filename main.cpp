@@ -12,8 +12,8 @@ int main(void)
 {
 	//Declaracion e Igualacion
 	IntegerStruct * pony = allocateInteger(eINT);
-	//int_list["pony"] = pony;
-	if(int_list["pony"] == nullptr)
+	int_list["pony"] = pony;
+	if(int_list.find("pony") == int_list.end())
 	{
 		cout << "la vaina e null!" << endl;
 		return 1;

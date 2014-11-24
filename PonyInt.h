@@ -11,7 +11,7 @@
 //Byte size constants
 enum { eBYTE = 1, eSHORT = 2, eINT = 4, eLONG = 8};
 
-typedef int8_t pony_byte;
+typedef int8_t 	pony_byte;
 typedef int16_t pony_short;
 typedef int32_t pony_int;
 typedef int64_t pony_long;

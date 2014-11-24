@@ -18,12 +18,11 @@ struct _IntStruct
 };
 
 typedef struct _IntStruct IntegerStruct;
-
-
+static std::string stdin_buffer;
 static std::map<const char*, IntegerStruct*> int_list;
 
 //Functions
-IntegerStruct * allocateInteger(pony_byte);
+void allocateInteger(const char *, pony_byte);
 std::string getInteger(IntegerStruct*);
 void setInteger(IntegerStruct**, intptr_t);
 
