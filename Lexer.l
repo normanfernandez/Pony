@@ -8,8 +8,8 @@ int line_number = 1;
 %}
 %%
 [ \t]        			{ ;}
-[0-9]+\.[0-9]+ 			{ yylval.fval = atof(yytext); return FLOAT; }
-[0-9]+         			{ yylval.ival = atoi(yytext); return INT; }
+[-]?[0-9]+\.[0-9]+ 			{ yylval.fval = atof(yytext); return FLOAT; }
+[-]?[0-9]+         			{ yylval.ival = atoi(yytext); return INT; }
 \'[a-zA-Z0-9 _]+\'  	{ yylval.sval = strtok(strdup(yytext), "\'"); return STRING;}
 ;						{ return SEMICOLON; }
 \(						{ return LPAREN; }
