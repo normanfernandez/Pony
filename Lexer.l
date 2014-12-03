@@ -29,6 +29,6 @@ int line_number = 1;
 "read"					{ return TOKEN_READ; }
 "var"          			{ return TOKEN_VAR; }
 "pony"					{ return PONY; }
-[a-zA-Z_][a-zA-Z0-9_]+	{ yylval.sval = strdup(yytext); return TOKEN_ID;}
+[a-zA-Z_]*[a-zA-Z0-9_]+	{ yylval.sval = strdup(yytext); return TOKEN_ID;}
 
 %%

@@ -3,18 +3,29 @@
 #include <cstdint>
 
 //Integer types for the language
+#define PONY_CHAR_MAX __INT8_MAX__
 #define PONY_BYTE_MAX __INT8_MAX__
 #define PONY_SHORT_MAX __INT16_MAX__
 #define PONY_INT_MAX __INT32_MAX__
 #define PONY_LONG_MAX __INT64_MAX__
 
 //Byte size constants
-enum { eBYTE = 1, eSHORT = 2, eINT = 4, eLONG = 8};
+enum {
+	eCHAR = -1,
+	eBYTE = 1,
+	eSHORT = 2,
+	eINT = 4,
+	eLONG = 8
+};
 
+typedef unsigned char pony_char;
 typedef int8_t 	pony_byte;
 typedef int16_t pony_short;
 typedef int32_t pony_int;
 typedef int64_t pony_long;
+
+#define __getChar(num)		\
+	*(unsigned char*)num
 
 #define __getByte(num) 		\
 	*(pony_byte*)num

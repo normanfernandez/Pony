@@ -1,4 +1,5 @@
 begin
-	print(-1);
 	pony();
+	var(int) p;
+	print(p_);
 end			 

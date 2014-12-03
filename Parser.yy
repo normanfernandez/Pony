@@ -78,9 +78,7 @@ exp:
 	|	TOKEN_PRINT LPAREN TOKEN_ID RPAREN 
 		{
 			cout << "Se lee " << $<sval>3 << endl;
-			for(auto it = int_list.begin();
-				it != int_list.end(); it++)
-				cout << getInteger((*it).second) << endl;
+			
 		}
 	|	declaration
 	|	pony_version	

@@ -28,6 +28,10 @@ void allocateInteger(const char * var_label,pony_byte size){
 std::string getInteger(IntegerStruct * int_struct){
 	std::ostringstream convert;
 	switch(int_struct->size){
+		case eCHAR:
+			convert << (pony_short)__getChar(int_struct->val);
+		break;
+
 		case eBYTE:
 			convert << (pony_short)__getByte(int_struct->val);
 		break;
@@ -49,6 +53,11 @@ std::string getInteger(IntegerStruct * int_struct){
 
 void setInteger(IntegerStruct ** int_struct, intptr_t num){
 	switch((*int_struct)->size){
+		case eCHAR:
+			(*int_struct)->val = new pony_char;
+			__setByte((*int_struct)->val, num);
+		break;
+
 		case eBYTE:
 			(*int_struct)->val = new pony_byte;
 			__setByte((*int_struct)->val, num);
