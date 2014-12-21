@@ -9,7 +9,7 @@ lex.yy.c:	Interface/Lexer.l
 		flex -o Obj/lex.yy.c Interface/Lexer.l
  
 Parser.tab.cc:	Interface/Parser.yy
-		bison Interface/Parser.yy -d -o Obj/Parser.tab.cc
+		bison Interface/Parser.yy -d -o Obj/Parser.tab.cc -v
 
 PonyCore.o:	Core/PonyCore.cpp
 		$(CC) -c Core/PonyCore.cpp -o Obj/PonyCore.o

@@ -11,7 +11,7 @@ using namespace std;
 int main(void)
 {
 	//Declaracion e Igualacion
-	IntegerStruct * pony = allocateInteger(eINT);
+	IntegerStruct * pony = allocateInteger("pony",eINT);
 	int_list["pony"] = pony;
 	if(int_list.find("pony") == int_list.end())
 	{

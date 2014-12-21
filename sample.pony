@@ -1,3 +1,0 @@
-begin
-	pony();
-end			 
