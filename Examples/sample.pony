@@ -1,4 +1,2 @@
-'hurr durr';
-"hello derr";
-true;
-		false;
+'pony';
+(7);

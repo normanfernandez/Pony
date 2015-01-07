@@ -1,57 +1,64 @@
 %{
+
 #include <iostream>
 #include "PonyInt.h"
 #include "Parser.tab.hh"
 using namespace std;
 int line_number = 1;
 #define YY_DECL extern "C" int yylex()
+
 %}
 %%
-[ \t]        			{ ;}
+
+[ \t]        			{ ; }
 [-]?[0-9]+\.[0-9]+ 		{ yylval.fval = atof(yytext); return FLOAT; }
 [-]?[0-9]+         		{ yylval.ival = atoi(yytext); return INT; }
 \'[a-zA-Z0-9 _]+\'  	{ yylval.sval = strtok(strdup(yytext), "\'"); return STRING_LITERAL;}
 \"[a-zA-Z0-9 _]+\"  	{ yylval.sval = strtok(strdup(yytext), "\""); return STRING;}
-;						{ return SEMICOLON; }
-':'						{ return COLON; }
+
+':'					{ return COLON; }
 "..."					{ return ELLIPSIS; }
-\(						{ return LPAREN; }
-\)						{ return RPAREN; }
-\n             			{++line_number; }
-.              			;
-"++"					{ return INC; }
-"--"					{ return DEC; }
-'?'						{ return TERNARY; }
-"lol"					{ return OR; }
-'&'						{ return AND; }
-'^'						{ return XOR; }
-','						{ return COMMA; }
+\(					{ return LPAREN; }
+\)					{ return RPAREN; }
+\n           			{++line_number; }
+;						{ return SEMICOLON; }
+.            			;
+','					{ return COMMA; }
 
-'<'						{ return LTHAN; }
-'<='					{ return LEQU; }
-'<<'					{ return L_OP; }
-'<<='					{ return L_EQU; }
+"++":\					{ return INC; }
+"--":\					{ return DEC; }
+'?':\					{ return TERNARY; }
+"|":\					{ return OR; }
+'&':\					{ return AND; }
+'^':\					{ return XOR; }
 
-'>'						{ return GTHAN; }
-'>='					{ return GEQU; }
-'>>'					{ return R_OP; }
-'>>='					{ return R_EQU; }
+'<':\					{ return LTHAN; }
+'<=':\					{ return LEQU; }
+'<<':\					{ return L_OP; }
+'<<=':\					{ return L_EQU; }
 
-'='						{ return EQ_OP; }
-"!="					{ return NE_OP; }
-"*="					{ return MUL_EQU; }
-"+="					{ return ADD_EQU; }
-"-="					{ return SUB_EQU; }
-"/="					{ return DIV_EQU; }
-"^="					{ return XOR_EQU; }
-\%\=					{ return MOD_EQU; }
-"&="					{ return AND_EQU; }
-"|="					{ return OR_EQU; }
+'>':\					{ return GTHAN; }
+'>=':\					{ return GEQU; }
+'>>':\					{ return R_OP; }
+'>>=':\					{ return R_EQU; }
+
+'=':\					{ return EQ_OP; }
+"!=":\					{ return NE_OP; }
+"*=":\					{ return MUL_EQU; }
+"+=":\					{ return ADD_EQU; }
+"-=":\					{ return SUB_EQU; }
+"/=":\					{ return DIV_EQU; }
+"^=":\					{ return XOR_EQU; }
+\%\=:\					{ return MOD_EQU; }
+"&=":\					{ return AND_EQU; }
+"|=":\					{ return OR_EQU; }
 
 "if"					{ return IF; }
 "else"					{ return ELSE; }
-"true"					{ yylval.ival = 1; return TRUE; }
-"false"					{ yylval.ival = 0; return FALSE; }
+
+"true"					{  yylval.ival = 1; return TRUE; }
+"false"					{  yylval.ival = 0; return FALSE; }
+
 "continue"				{ return CONTINUE; }
 "break"					{ return BREAK; }
 "return"				{ return RETURN; }
@@ -60,17 +67,22 @@ int line_number = 1;
 "short"					{ yylval.ival = eSHORT; return TYPE_SHORT; }
 "int"					{ yylval.ival = eINT; return TYPE_INT; }
 "long"					{ yylval.ival = eLONG; return TYPE_LONG; }
-"end"          			{ return END; }
-"print"        			{ return TOKEN_PRINT; }
+"end"        			{ return END; }
+"print"      			{ return TOKEN_PRINT; }
 "read"					{ return TOKEN_READ; }
 "while"					{ return WHILE; }
 "for"					{ return FOR;}
-"var"          			{ return TOKEN_VAR; }
-"pony"					{ return PONY; }
+"var"        			{ return VAR; }
 
 "or"					{ return OR_OP; }
 "and"					{ return AND_OP; }
-"byte_size"				{ return BSIZE; }
+"byte_size"			{ return BSIZE; }
+
+'+':\					{ return ADD; }
+'-':\					{ return SUB; }
+\*:\					{ return MUL; }
+\/:\					{ return DIV; }
+'%':\					{ return MOD; }
 
 [a-zA-Z_]*[a-zA-Z0-9_]+	{ yylval.sval = strdup(yytext); return TOKEN_ID;}
 

@@ -3,7 +3,7 @@
 #include <iostream>
 #include "PonyCore.h"
 #include "PonyInt.h"
-#define PONY_VERSION "Pony Version 0.2.2"
+#define PONY_VERSION "Pony Version 0.5"
 
 using namespace std;
 
@@ -36,7 +36,7 @@ void yyerror(const char *s);
 %token TOKEN_PRINT
 %token TOKEN_READ
 %token PONY 
-%token TOKEN_VAR
+%token VAR
 %token TYPE_BYTE
 %token COLON
 %token TYPE_SHORT
@@ -80,11 +80,9 @@ void yyerror(const char *s);
 %token ELLIPSIS
 %token WS
 
-%left '+' '-'
-%left '*' '/' '%' BSIZE
+%left ADD SUB
+%left MUL DIV MOD BSIZE
 
-// define the "terminal symbol" token types I'm going to use (in CAPS
-// by convention), and associate each with a field of the union:
 %token <ival> INT
 %token <fval> FLOAT
 %token <sval> STRING
@@ -130,28 +128,24 @@ statement_list:
 	;
 
 expression_statement:
-		SEMICOLON
-	|	expression SEMICOLON
+		SEMICOLON { }
+	|	expression SEMICOLON {cout << "la expresion es: " << $<ival>1 << endl; }
 	;
 
 primary_expression:
-		STRING {cout << "str es: " << yylval.sval << endl;}
-	|	INT {cout << "el numero es: " << yylval.ival << endl;}
-	|	TRUE {cout << "la vaina e true!" << endl;}
-	|	FALSE {cout << "la vaina e false!" << endl;}
-	|	FLOAT {cout << "el numero es: " << yylval.fval << endl;}
-	|	STRING_LITERAL {cout << "str es: " << yylval.sval << endl;}
-	|	LPAREN expression RPAREN
+		string {cout << "str generico es: " << yylval.sval << endl;}
+	|	number
+	|	LPAREN expression RPAREN { $<ival>$ = $<ival>2; }
 	;
 	
 expression:
-		assignment_expression
+		assignment_expression { $<ival>$ = $<ival>1; }
 	|	expression COMMA assignment_expression
 	;
 
 assignment_expression:
-		conditional_expression
-	|	unary_expression assignment_operator assignment_expression
+		conditional_expression { $<ival>$ = $<ival>1; }
+	|	unary_expression assignment_operator assignment_expression 
 	;
 
 assignment_operator:
@@ -169,69 +163,69 @@ assignment_operator:
 	;
 
 constant_expression:
-		conditional_expression
+		conditional_expression { $<ival>$ = $<ival>1; }
 	;
 
 conditional_expression:
-		logical_or_expression
+		logical_or_expression { $<ival>$ = $<ival>1; }
 	|	logical_or_expression TERNARY expression COLON conditional_expression
 	;
 	
 logical_or_expression:
-		logical_and_expression
-	|	logical_or_expression OR_OP logical_and_expression
+		logical_and_expression { $<ival>$ = $<ival>1; }
+	|	logical_or_expression OR_OP logical_and_expression { $<ival>$ = $<ival>1 || $<ival>3;  }
 	;
 
 logical_and_expression:
-		inclusive_or_expression
-	|	logical_and_expression	AND_OP inclusive_or_expression
+		inclusive_or_expression { $<ival>$ = $<ival>1; }
+	|	logical_and_expression	AND_OP inclusive_or_expression { $<ival>$ = $<ival>1 && $<ival>3;  }
 	;
 
 inclusive_or_expression:
-		exclusive_or_expression
-	|	inclusive_or_expression OR exclusive_or_expression 
+		exclusive_or_expression { $<ival>$ = $<ival>1; }
+	|	inclusive_or_expression OR exclusive_or_expression { $<ival>$ = $<ival>1 | $<ival>3;  }
 	;
 
 exclusive_or_expression:
-		and_expression
-	|	exclusive_or_expression XOR and_expression
+		and_expression { $<ival>$ = $<ival>1; }
+	|	exclusive_or_expression XOR and_expression { $<ival>$ = $<ival>1 ^ $<ival>3;  }
 	;
 	
 and_expression:
-		equality_expression
-	|	and_expression AND equality_expression
+		equality_expression { $<ival>$ = $<ival>1; }
+	|	and_expression AND equality_expression { $<ival>$ = $<ival>1 & $<ival>3;  }
 	;
 	
 equality_expression:
-		relational_expression
-	|	equality_expression EQ_OP relational_expression
-	|	equality_expression NE_OP relational_expression
+		relational_expression { $<ival>$ = $<ival>1; }
+	|	equality_expression EQ_OP relational_expression { $<ival>$ = $<ival>1 == $<ival>3;  }
+	|	equality_expression NE_OP relational_expression { $<ival>$ = $<ival>1 != $<ival>3;  }
 	;
 relational_expression:
-		shift_expression
-	|	relational_expression LTHAN shift_expression
-	|	relational_expression GTHAN shift_expression
-	|	relational_expression LEQU shift_expression
-	|	relational_expression GEQU shift_expression
+		shift_expression { $<ival>$ = $<ival>1; }
+	|	relational_expression LTHAN shift_expression { $<ival>$ = $<ival>1 < $<ival>3;  }
+	|	relational_expression GTHAN shift_expression { $<ival>$ = $<ival>1 > $<ival>3;  }
+	|	relational_expression LEQU shift_expression { $<ival>$ = $<ival>1 <= $<ival>3;  }
+	|	relational_expression GEQU shift_expression { $<ival>$ = $<ival>1 >= $<ival>3;  }
 	;
 	
 shift_expression:
 		additive_expression
-	|	shift_expression L_OP additive_expression
-	|	shift_expression R_OP additive_expression
+	|	shift_expression L_OP additive_expression { $<ival>$ = $<ival>1 << $<ival>3; }
+	|	shift_expression R_OP additive_expression { $<ival>$ = $<ival>1 >> $<ival>3; }
 	;
 
 additive_expression:
-		multiplicative_expression
-	|	additive_expression '+' multiplicative_expression
-	|	additive_expression '-' multiplicative_expression
+		multiplicative_expression { $<ival>$ = $<ival>1; }
+	|	additive_expression '+' multiplicative_expression { $<ival>$ = $<ival>1 + $<ival>3; cout << "Suma es: " << yylval.ival << endl;}
+	|	additive_expression '-' multiplicative_expression { $<ival>$ = $<ival>1 - $<ival>3; }
 	;
 
 multiplicative_expression:
 		cast_expression
-	|	multiplicative_expression '*' cast_expression
-	|	multiplicative_expression '/' cast_expression
-	|	multiplicative_expression '%' cast_expression
+	|	multiplicative_expression '*' cast_expression { $<ival>$ = $<ival>1 * $<ival>3; }
+	|	multiplicative_expression '/' cast_expression { $<ival>$ = $<ival>1 / $<ival>3; }
+	|	multiplicative_expression '%' cast_expression { $<ival>$ = $<ival>1 % $<ival>3; }
 	;
 	
 cast_expression:
@@ -241,8 +235,8 @@ cast_expression:
 	
 unary_expression:
 		postfix_expression
-	|	INC unary_expression
-	|	DEC unary_expression
+	|	INC unary_expression { $<ival>$ = ++$<ival>2; }
+	|	DEC unary_expression { $<ival>$ = --$<ival>2; }
 	|	unary_operator cast_expression
 	|	BSIZE unary_expression
 	|	BSIZE LPAREN type_specifier RPAREN
@@ -261,8 +255,8 @@ postfix_expression:
 	|	postfix_expression '[' expression ']'
 	|	postfix_expression LPAREN RPAREN
 	|	postfix_expression LPAREN argument_expression_list RPAREN
-	|	postfix_expression INC
-	|	postfix_expression DEC
+	|	postfix_expression INC { $<ival>$ = $<ival>1++; }
+	|	postfix_expression DEC { $<ival>$ = $<ival>1--; }
 	;
 	
 argument_expression_list:
@@ -305,6 +299,7 @@ declaration:
 declaration_specifiers:
 		type_specifier
 	|	type_specifier declaration_specifiers
+	|	VAR declaration_specifiers EQ_OP expression
 	;
 
 type_specifier:
@@ -369,18 +364,16 @@ parameter_declaration:
 	|	declaration_specifiers
 	;
 
-pony_version:
-		PONY LPAREN RPAREN { cout << PONY_VERSION << endl; }
+number:
+		INT { $<ival>$ = $<ival>1; }
+	|	TRUE { $<ival>$ = $<ival>1;}
+	|	FALSE { $<ival>$ = $<ival>1;}
+	|	FLOAT { $<fval>$ = $<fval>1; }
 	;
 	
-footer:
-		END endls
-	| 	END
-	;
-
-endls:
-	 	ENDL
-	|	ENDL endls
+string:
+		STRING
+	|	STRING_LITERAL
 	;
 
 %%
