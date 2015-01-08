@@ -1,2 +1,2 @@
-'pony';
-(7);
+true and false;
+true and true;

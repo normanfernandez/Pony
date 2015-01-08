@@ -13,37 +13,38 @@ int line_number = 1;
 [ \t]        			{ ; }
 [-]?[0-9]+\.[0-9]+ 		{ yylval.fval = atof(yytext); return FLOAT; }
 [-]?[0-9]+         		{ yylval.ival = atoi(yytext); return INT; }
-\'[a-zA-Z0-9 _]+\'  	{ yylval.sval = strtok(strdup(yytext), "\'"); return STRING_LITERAL;}
-\"[a-zA-Z0-9 _]+\"  	{ yylval.sval = strtok(strdup(yytext), "\""); return STRING;}
+\'(.)*\'  				{ yylval.sval = (char*)std::string(yytext).c_str(); return STRING_LITERAL;}
+\"(\\.|[^"])*\"			{ yylval.sval = strdup(yytext); return STRING;}
 
-':'					{ return COLON; }
+':':					{ return COLON; }
 "..."					{ return ELLIPSIS; }
-\(					{ return LPAREN; }
-\)					{ return RPAREN; }
+\(						{ return LPAREN; }
+\)						{ return RPAREN; }
 \n           			{++line_number; }
 ;						{ return SEMICOLON; }
 .            			;
-','					{ return COMMA; }
+',':					{ return COMMA; }
 
 "++":\					{ return INC; }
 "--":\					{ return DEC; }
-'?':\					{ return TERNARY; }
-"|":\					{ return OR; }
-'&':\					{ return AND; }
-'^':\					{ return XOR; }
+'?':					{ return TERNARY; }
+"|":					{ return OR; }
+'&':					{ return AND; }
+("^")|("xor")			{ return XOR; }
 
-'<':\					{ return LTHAN; }
-'<=':\					{ return LEQU; }
-'<<':\					{ return L_OP; }
-'<<=':\					{ return L_EQU; }
+"<":					{ return LTHAN; }
+"<=":					{ return LEQU; }
+"<<":					{ return L_OP; }
+"<<=":					{ return L_EQU; }
 
-'>':\					{ return GTHAN; }
-'>=':\					{ return GEQU; }
-'>>':\					{ return R_OP; }
-'>>=':\					{ return R_EQU; }
+">":					{ return GTHAN; }
+">=":					{ return GEQU; }
+">>":					{ return R_OP; }
+">>=":					{ return R_EQU; }
 
-'=':\					{ return EQ_OP; }
-"!=":\					{ return NE_OP; }
+"=":					{ return EQUAL; }
+("==")|("is")			{ return EQ_OP; }
+("!=")|("not")			{ return NE_OP; }
 "*=":\					{ return MUL_EQU; }
 "+=":\					{ return ADD_EQU; }
 "-=":\					{ return SUB_EQU; }
@@ -74,11 +75,13 @@ int line_number = 1;
 "for"					{ return FOR;}
 "var"        			{ return VAR; }
 
-"or"					{ return OR_OP; }
-"and"					{ return AND_OP; }
-"byte_size"			{ return BSIZE; }
 
-'+':\					{ return ADD; }
+("or")|("||")			{ return OR_OP; }
+("and")|("&&")			{ return AND_OP; }
+
+"byte_size"				{ return BSIZE; }
+
+"+":					{ return ADD; }
 '-':\					{ return SUB; }
 \*:\					{ return MUL; }
 \/:\					{ return DIV; }

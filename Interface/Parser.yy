@@ -47,6 +47,8 @@ void yyerror(const char *s);
 %token OR_OP
 %token OR
 
+%token EQUAL
+
 %token ADD_EQU
 %token MUL_EQU
 %token SUB_EQU
@@ -168,7 +170,7 @@ constant_expression:
 
 conditional_expression:
 		logical_or_expression { $<ival>$ = $<ival>1; }
-	|	logical_or_expression TERNARY expression COLON conditional_expression
+	|	logical_or_expression TERNARY expression COLON conditional_expression { $<ival>$ = ($<ival>1 ? $<ival>3 : $<ival>5 );}
 	;
 	
 logical_or_expression:
@@ -210,14 +212,14 @@ relational_expression:
 	;
 	
 shift_expression:
-		additive_expression
+		additive_expression { $<ival>$ = $<ival>1; }
 	|	shift_expression L_OP additive_expression { $<ival>$ = $<ival>1 << $<ival>3; }
 	|	shift_expression R_OP additive_expression { $<ival>$ = $<ival>1 >> $<ival>3; }
 	;
 
 additive_expression:
 		multiplicative_expression { $<ival>$ = $<ival>1; }
-	|	additive_expression '+' multiplicative_expression { $<ival>$ = $<ival>1 + $<ival>3; cout << "Suma es: " << yylval.ival << endl;}
+	|	additive_expression '+' multiplicative_expression
 	|	additive_expression '-' multiplicative_expression { $<ival>$ = $<ival>1 - $<ival>3; }
 	;
 
@@ -299,7 +301,7 @@ declaration:
 declaration_specifiers:
 		type_specifier
 	|	type_specifier declaration_specifiers
-	|	VAR declaration_specifiers EQ_OP expression
+	|	VAR LTHAN declaration_specifiers GTHAN EQ_OP expression
 	;
 
 type_specifier:
