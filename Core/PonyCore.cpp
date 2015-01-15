@@ -12,7 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <cstdlib>
+#include <cmath>
 #include <cstring>
 
 extern "C" void yyerror(const char*);
@@ -107,6 +107,8 @@ int evaluateIntExpression(SExpression *exp)
 			return evaluateIntExpression(exp->left) & evaluateIntExpression(exp->right);
 		case eXOR:
 			return evaluateIntExpression(exp->left) ^ evaluateIntExpression(exp->right);
+		case ePOW:
+			return pow(evaluateIntExpression(exp->left),evaluateIntExpression(exp->right));
 		case eVALUE:
 			return exp->value;
 

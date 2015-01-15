@@ -11,29 +11,27 @@
  */
 
 #include "Expression.hpp"
-#include <stdio.h>
-#include <stdlib.h>
-
+#include <cstdio>
 /**
  * @brief Allocates space for expression
- * @return The expression or NULL if not enough memory
+ * @return The expression or nullptr if not enough memory
  */
 
 
 SExpression *allocateExpression(int num)
 {
-    SExpression *b = new SExpression;
+    SExpression *exp = new SExpression;
 
-    if (b == NULL)
-        return NULL;
+    if (exp == nullptr)
+        return nullptr;
 
-    b->type = eVALUE;
-    b->value = num;
+    exp->type = eVALUE;
+    exp->value = num;
 
-    b->left = NULL;
-    b->right = NULL;
+    exp->left = nullptr;
+    exp->right = nullptr;
 
-    return b;
+    return exp;
 }
 
 
@@ -45,30 +43,32 @@ SExpression *allocateExpression()
 SExpression *createNumber(int value)
 {
 
-    SExpression *b = allocateExpression(value);
-    return b;
+    SExpression *exp = allocateExpression(value);
+    return exp;
 }
 
 SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right)
 {
-    SExpression *b = allocateExpression();
-    if (b == NULL)
-        return NULL;
+    SExpression *exp = allocateExpression();
+    if (exp == nullptr)
+        return nullptr;
 
-    b->type = type;
-    b->left = left;
-    b->right = right;
+    exp->type = type;
+    exp->left = left;
+    exp->right = right;
 
-    return b;
+    return exp;
 }
 
-void deleteExpression(SExpression **b)
+void deleteExpression(SExpression **exp)
 {
-    if (*b == NULL)
+    if (*exp)
         return;
 
-    deleteExpression(&((*b)->left));
-    deleteExpression(&((*b)->right));
+    deleteExpression(&((*exp)->left));
+    deleteExpression(&((*exp)->right));
 
-    delete *b;
+    delete *exp;
+    *exp = nullptr;
+    puts("termina bien el delete!");
 }

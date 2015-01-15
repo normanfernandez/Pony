@@ -115,7 +115,11 @@ function_definition:
 	;
 
 statement:
-		expression_statement { $<ival>$ = evaluateIntExpression($<exp>1); }
+		expression_statement 
+		{
+			$<ival>$ = $<ival>1;
+			printf("expression result: %i\n", $<ival>1);
+		}
 	|	if_statement 
 	|	declaration
 	|	function_definition
@@ -124,15 +128,21 @@ statement:
 	;
 
 statement_list:
-		statement { cout << "la vaina da : " << $<ival>1 << endl; }
-	|	statement_list statement { cout << "la vaina da : " << $<ival>2 << endl; }
+		statement
+	|	statement_list statement
 	;
 
 expression_statement:
-		SEMICOLON 	{
-		 		//nothing!
-					}
-	|	expression SEMICOLON { $<exp>$ = $<exp>1; }
+		SEMICOLON 
+		{
+			//nothing!
+		}
+	|	expression SEMICOLON 
+		{ 
+			$<ival>$ = evaluateIntExpression($<exp>1); 
+			deleteExpression(&$<exp>1); 
+		}
+	;
 
 primary_expression:
 		string {cout << "str generico es: " << yylval.sval << endl;}
@@ -143,11 +153,6 @@ primary_expression:
 expression:
 		assignment_expression { $<exp>$ = $<exp>1; }
 	|	expression COMMA assignment_expression
-	;
-	
-expression_list:
-		assignment_expression { $<exp>$ = $<exp>1; }
-	|	expression_list assignment_expression { $<exp>$ = $<exp>2; }	
 	;
 
 assignment_expression:
@@ -225,7 +230,6 @@ shift_expression:
 additive_expression:
 		multiplicative_expression { $<exp>$ = $<exp>1;}
 	|	additive_expression ADD multiplicative_expression {$<exp>$ = createOperation(ePLUS, $<exp>1, $<exp>3);}
-	| 	LPAREN ADD expression_list RPAREN{ $<exp>$ = createOperation(ePLUS, $<exp>3, $<exp>3); }
 	|	additive_expression SUB  multiplicative_expression { $<exp>$ = createOperation(eSUBTRACT, $<exp>1, $<exp>2); }
 	;
 
@@ -234,6 +238,7 @@ multiplicative_expression:
 	|	multiplicative_expression MUL cast_expression { $<exp>$ = createOperation(eMULTIPLY, $<exp>1, $<exp>3); }
 	|	multiplicative_expression DIV cast_expression { $<exp>$ = createOperation(eDIVIDE, $<exp>1, $<exp>3); }
 	|	multiplicative_expression MOD cast_expression { $<exp>$ = createOperation(eMOD, $<exp>1, $<exp>3); }
+	|	multiplicative_expression POW cast_expression { $<exp>$ = createOperation(ePOW, $<exp>1, $<exp>3); }
 	;
 	
 cast_expression:
@@ -273,7 +278,14 @@ argument_expression_list:
 
 
 if_statement:
-		IF LPAREN expression RPAREN statement { cout << "el if!: " << endl; }
+		IF LPAREN expression RPAREN statement 
+		{ 
+			if(evaluateIntExpression($<exp>3))
+			{
+				puts("Se cumple el if!");
+				$<exp>$ = $<exp>5;
+			} 
+		}
 	|	IF LPAREN expression RPAREN ELSE statement
 	;
 

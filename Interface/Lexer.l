@@ -17,8 +17,9 @@ int line_number = 1;
 "-"					{ return SUB; }
 "*"					{ return MUL; }
 "/"					{ return DIV; }
-"%"					{ return MOD; }
-"**"				{ return POW; }
+("%")|("mod")		{ return MOD; }
+("**")|("pow")		{ return POW; }
+
 ("or")|("||")		{ return OR_OP; }
 ("and")|("&&")		{ return AND_OP; }
 
