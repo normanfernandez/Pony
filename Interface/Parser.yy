@@ -47,7 +47,6 @@ void yyerror(const char *);
 %token TYPE_LONG
 
 %token OR_OP
-%token OR
 
 %token EQUAL
 
@@ -64,8 +63,6 @@ void yyerror(const char *);
 
 %token R_OP
 %token L_OP
-%token AND
-%token XOR
 %token AND_OP
 %token GEQU
 %token LEQU
@@ -85,7 +82,7 @@ void yyerror(const char *);
 %token WS
 
 %left ADD SUB
-%left MUL DIV MOD BSIZE
+%left MUL DIV MOD BSIZE OR XOR AND POW
 
 %token <ival> INT
 %token <fval> FLOAT
@@ -118,8 +115,8 @@ function_definition:
 	;
 
 statement:
-		expression_statement
-	|	if_statement
+		expression_statement { $<ival>$ = evaluateIntExpression($<exp>1); }
+	|	if_statement 
 	|	declaration
 	|	function_definition
 	|	loop_statement
@@ -127,23 +124,30 @@ statement:
 	;
 
 statement_list:
-		statement
-	|	statement_list statement
+		statement { cout << "la vaina da : " << $<ival>1 << endl; }
+	|	statement_list statement { cout << "la vaina da : " << $<ival>2 << endl; }
 	;
 
 expression_statement:
-		SEMICOLON { }
-	|	expression SEMICOLON {$<ival>$ = evaluateIntExpression($<exp>1); cout << "la exp evalua: " << evaluateIntExpression($<exp>1) << endl;}
+		SEMICOLON 	{
+		 		//nothing!
+					}
+	|	expression SEMICOLON { $<exp>$ = $<exp>1; }
 
 primary_expression:
 		string {cout << "str generico es: " << yylval.sval << endl;}
 	|	number { $<exp>$ = yylval.exp;}
-	|	LPAREN expression RPAREN { $<ival>$ = $<ival>2; }
+	|	LPAREN expression RPAREN { $<exp>$ = $<exp>2; }
 	;
 	
 expression:
-		assignment_expression { $<ival>$ = $<ival>1; }
+		assignment_expression { $<exp>$ = $<exp>1; }
 	|	expression COMMA assignment_expression
+	;
+	
+expression_list:
+		assignment_expression { $<exp>$ = $<exp>1; }
+	|	expression_list assignment_expression { $<exp>$ = $<exp>2; }	
 	;
 
 assignment_expression:
@@ -185,8 +189,8 @@ logical_and_expression:
 	;
 
 inclusive_or_expression:
-		exclusive_or_expression { $<ival>$ = $<ival>1; }
-	|	inclusive_or_expression OR exclusive_or_expression { $<ival>$ = $<ival>1 | $<ival>3;  }
+		exclusive_or_expression { $<exp>$ = $<exp>1; }
+	|	inclusive_or_expression OR exclusive_or_expression { $<exp>$ = createOperation(eOR, $<exp>1, $<exp>3);  }
 	;
 
 exclusive_or_expression:
@@ -195,17 +199,17 @@ exclusive_or_expression:
 	;
 	
 and_expression:
-		equality_expression { $<ival>$ = $<ival>1; }
-	|	and_expression AND equality_expression { $<ival>$ = $<ival>1 & $<ival>3;  }
+		equality_expression { $<exp>$ = $<exp>1; }
+	|	and_expression AND equality_expression { $<exp>$ = createOperation(eAND, $<exp>1, $<exp>3);  }
 	;
 	
 equality_expression:
-		relational_expression { $<ival>$ = $<ival>1; }
+		relational_expression { $<exp>$ = $<exp>1; }
 	|	equality_expression EQ_OP relational_expression { $<ival>$ = $<ival>1 == $<ival>3;  }
 	|	equality_expression NE_OP relational_expression { $<ival>$ = $<ival>1 != $<ival>3;  }
 	;
 relational_expression:
-		shift_expression { $<ival>$ = $<ival>1; }
+		shift_expression { $<exp>$ = $<exp>1; }
 	|	relational_expression LTHAN shift_expression { $<ival>$ = $<ival>1 < $<ival>3;  }
 	|	relational_expression GTHAN shift_expression { $<ival>$ = $<ival>1 > $<ival>3;  }
 	|	relational_expression LEQU shift_expression { $<ival>$ = $<ival>1 <= $<ival>3;  }
@@ -221,18 +225,19 @@ shift_expression:
 additive_expression:
 		multiplicative_expression { $<exp>$ = $<exp>1;}
 	|	additive_expression ADD multiplicative_expression {$<exp>$ = createOperation(ePLUS, $<exp>1, $<exp>3);}
-	|	additive_expression SUB multiplicative_expression { $<exp>$ = createOperation(eSUBTRACT, $<exp>1, $<exp>3); }
+	| 	LPAREN ADD expression_list RPAREN{ $<exp>$ = createOperation(ePLUS, $<exp>3, $<exp>3); }
+	|	additive_expression SUB  multiplicative_expression { $<exp>$ = createOperation(eSUBTRACT, $<exp>1, $<exp>2); }
 	;
 
 multiplicative_expression:
-		cast_expression
-	|	multiplicative_expression '*' cast_expression { $<exp>$ = createOperation(eMULTIPLY, $<exp>1, $<exp>3); }
-	|	multiplicative_expression '/' cast_expression { $<ival>$ = $<ival>1 / $<ival>3; }
-	|	multiplicative_expression '%' cast_expression { $<ival>$ = $<ival>1 % $<ival>3; }
+		cast_expression { $<exp>$ = $<exp>1; }
+	|	multiplicative_expression MUL cast_expression { $<exp>$ = createOperation(eMULTIPLY, $<exp>1, $<exp>3); }
+	|	multiplicative_expression DIV cast_expression { $<exp>$ = createOperation(eDIVIDE, $<exp>1, $<exp>3); }
+	|	multiplicative_expression MOD cast_expression { $<exp>$ = createOperation(eMOD, $<exp>1, $<exp>3); }
 	;
 	
 cast_expression:
-		unary_expression { $<exp>$ = $<exp>1;}
+		unary_expression { $<exp>$ = $<exp>1; }
 	|	LPAREN type_specifier RPAREN cast_expression
 	;
 	
@@ -245,8 +250,7 @@ unary_expression:
 	|	BSIZE LPAREN type_specifier RPAREN
 	;
 unary_operator:
-		'&' 
-	| 	'*' 
+		AND
 	| 	'+' 
 	|	'-' 
 	|	'~' 
@@ -290,7 +294,7 @@ jump_statement:
 		CONTINUE SEMICOLON
 	|	BREAK SEMICOLON
 	|	RETURN SEMICOLON
-	|	RETURN expression SEMICOLON
+	|	RETURN expression SEMICOLON { cout << "expression: " << evaluateIntExpression($<exp>2) << endl;}
 	;
 
 

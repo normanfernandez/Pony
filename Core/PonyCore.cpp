@@ -92,13 +92,19 @@ int evaluateIntExpression(SExpression *exp)
 		case eMULTIPLY:
 			return evaluateIntExpression(exp->left) * evaluateIntExpression(exp->right);
 		case eSUBTRACT:
-			return evaluateIntExpression(exp->left) - evaluateIntExpression(exp->right);
+			return evaluateIntExpression(exp->left) + evaluateIntExpression(exp->right);
 		case eDIVIDE:
 			return evaluateIntExpression(exp->left) / evaluateIntExpression(exp->right);
+		case eMOD:
+			return evaluateIntExpression(exp->left) % evaluateIntExpression(exp->right);
 		case eLOGIC_OR:
 			return evaluateIntExpression(exp->left) || evaluateIntExpression(exp->right);
 		case eLOGIC_AND:
 			return evaluateIntExpression(exp->left) && evaluateIntExpression(exp->right);
+		case eOR:
+			return evaluateIntExpression(exp->left) | evaluateIntExpression(exp->right);
+		case eAND:
+			return evaluateIntExpression(exp->left) & evaluateIntExpression(exp->right);
 		case eXOR:
 			return evaluateIntExpression(exp->left) ^ evaluateIntExpression(exp->right);
 		case eVALUE:

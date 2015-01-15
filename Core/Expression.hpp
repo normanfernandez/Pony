@@ -17,7 +17,10 @@ typedef enum tagEOperationType
     ePLUS,
     eLOGIC_OR,
     eLOGIC_AND,
-    eXOR
+    eAND,
+    eOR,
+    eXOR,
+    eMOD
 } EOperationType;
 
 /**
