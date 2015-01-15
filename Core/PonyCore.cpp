@@ -8,10 +8,12 @@
 
 #include "PonyCore.h"
 #include "PonyInt.h"
+#include "Expression.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <cstring>
 
 extern "C" void yyerror(const char*);
 
@@ -77,5 +79,32 @@ void setInteger(IntegerStruct ** int_struct, intptr_t num){
 			(*int_struct)->val = new pony_long;
 			__setLong((*int_struct)->val, num);
 		break;
+	}
+}
+
+
+int evaluateIntExpression(SExpression *exp)
+{
+	switch(exp->type)
+	{
+		case ePLUS:
+			return evaluateIntExpression(exp->left) + evaluateIntExpression(exp->right);
+		case eMULTIPLY:
+			return evaluateIntExpression(exp->left) * evaluateIntExpression(exp->right);
+		case eSUBTRACT:
+			return evaluateIntExpression(exp->left) - evaluateIntExpression(exp->right);
+		case eDIVIDE:
+			return evaluateIntExpression(exp->left) / evaluateIntExpression(exp->right);
+		case eLOGIC_OR:
+			return evaluateIntExpression(exp->left) || evaluateIntExpression(exp->right);
+		case eLOGIC_AND:
+			return evaluateIntExpression(exp->left) && evaluateIntExpression(exp->right);
+		case eXOR:
+			return evaluateIntExpression(exp->left) ^ evaluateIntExpression(exp->right);
+		case eVALUE:
+			return exp->value;
+
+		default:
+			return -1; //Error happens!
 	}
 }

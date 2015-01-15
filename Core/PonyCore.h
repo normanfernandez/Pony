@@ -8,6 +8,7 @@
 #define PONY_CORE_H
 
 #include "PonyInt.h"
+#include "Expression.hpp"
 #include <string>
 #include <map>
 
@@ -25,5 +26,5 @@ static std::map<const char*, IntegerStruct*> int_list;
 void allocateInteger(const char *, pony_byte);
 std::string getInteger(IntegerStruct*);
 void setInteger(IntegerStruct**, intptr_t);
-
+int evaluateIntExpression(SExpression *);
 #endif

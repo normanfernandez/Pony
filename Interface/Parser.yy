@@ -3,7 +3,8 @@
 #include <iostream>
 #include "PonyCore.h"
 #include "PonyInt.h"
-#define PONY_VERSION "Pony Version 0.5"
+#include "Expression.hpp"
+#define PONY_VERSION "Pony Version 0.6"
 
 using namespace std;
 
@@ -13,13 +14,14 @@ extern "C" int yyparse();
 extern "C" FILE *yyin;
 extern int line_number;
  
-void yyerror(const char *s);
+void yyerror(const char *);
 %}
 
 %union {
 	int ival;
 	float fval;
 	char *sval;
+	struct tagSExpression *exp;
 }
 
 // define the keywords token:
@@ -131,12 +133,11 @@ statement_list:
 
 expression_statement:
 		SEMICOLON { }
-	|	expression SEMICOLON {cout << "la expresion es: " << $<ival>1 << endl; }
-	;
+	|	expression SEMICOLON {$<ival>$ = evaluateIntExpression($<exp>1); cout << "la exp evalua: " << evaluateIntExpression($<exp>1) << endl;}
 
 primary_expression:
 		string {cout << "str generico es: " << yylval.sval << endl;}
-	|	number
+	|	number { $<exp>$ = yylval.exp;}
 	|	LPAREN expression RPAREN { $<ival>$ = $<ival>2; }
 	;
 	
@@ -165,22 +166,22 @@ assignment_operator:
 	;
 
 constant_expression:
-		conditional_expression { $<ival>$ = $<ival>1; }
+		conditional_expression { $<exp>$ = $<exp>1; }
 	;
 
 conditional_expression:
-		logical_or_expression { $<ival>$ = $<ival>1; }
+		logical_or_expression { $<exp>$ = $<exp>1; }
 	|	logical_or_expression TERNARY expression COLON conditional_expression { $<ival>$ = ($<ival>1 ? $<ival>3 : $<ival>5 );}
 	;
 	
 logical_or_expression:
-		logical_and_expression { $<ival>$ = $<ival>1; }
-	|	logical_or_expression OR_OP logical_and_expression { $<ival>$ = $<ival>1 || $<ival>3;  }
+		logical_and_expression { $<exp>$ = $<exp>1; }
+	|	logical_or_expression OR_OP logical_and_expression { $<exp>$ = createOperation(eLOGIC_OR, $<exp>1, $<exp>3);  }
 	;
 
 logical_and_expression:
-		inclusive_or_expression { $<ival>$ = $<ival>1; }
-	|	logical_and_expression	AND_OP inclusive_or_expression { $<ival>$ = $<ival>1 && $<ival>3;  }
+		inclusive_or_expression { $<exp>$ = $<exp>1; }
+	|	logical_and_expression	AND_OP inclusive_or_expression { $<exp>$ = createOperation(eLOGIC_AND, $<exp>1, $<exp>3);  }
 	;
 
 inclusive_or_expression:
@@ -189,8 +190,8 @@ inclusive_or_expression:
 	;
 
 exclusive_or_expression:
-		and_expression { $<ival>$ = $<ival>1; }
-	|	exclusive_or_expression XOR and_expression { $<ival>$ = $<ival>1 ^ $<ival>3;  }
+		and_expression { $<exp>$ = $<exp>1; }
+	|	exclusive_or_expression XOR and_expression { $<exp>$ = createOperation(eXOR, $<exp>1, $<exp>3);  }
 	;
 	
 and_expression:
@@ -212,31 +213,31 @@ relational_expression:
 	;
 	
 shift_expression:
-		additive_expression { $<ival>$ = $<ival>1; }
+		additive_expression { $<exp>$ = $<exp>1; }
 	|	shift_expression L_OP additive_expression { $<ival>$ = $<ival>1 << $<ival>3; }
 	|	shift_expression R_OP additive_expression { $<ival>$ = $<ival>1 >> $<ival>3; }
 	;
 
 additive_expression:
-		multiplicative_expression { $<ival>$ = $<ival>1; }
-	|	additive_expression '+' multiplicative_expression
-	|	additive_expression '-' multiplicative_expression { $<ival>$ = $<ival>1 - $<ival>3; }
+		multiplicative_expression { $<exp>$ = $<exp>1;}
+	|	additive_expression ADD multiplicative_expression {$<exp>$ = createOperation(ePLUS, $<exp>1, $<exp>3);}
+	|	additive_expression SUB multiplicative_expression { $<exp>$ = createOperation(eSUBTRACT, $<exp>1, $<exp>3); }
 	;
 
 multiplicative_expression:
 		cast_expression
-	|	multiplicative_expression '*' cast_expression { $<ival>$ = $<ival>1 * $<ival>3; }
+	|	multiplicative_expression '*' cast_expression { $<exp>$ = createOperation(eMULTIPLY, $<exp>1, $<exp>3); }
 	|	multiplicative_expression '/' cast_expression { $<ival>$ = $<ival>1 / $<ival>3; }
 	|	multiplicative_expression '%' cast_expression { $<ival>$ = $<ival>1 % $<ival>3; }
 	;
 	
 cast_expression:
-		unary_expression
+		unary_expression { $<exp>$ = $<exp>1;}
 	|	LPAREN type_specifier RPAREN cast_expression
 	;
 	
 unary_expression:
-		postfix_expression
+		postfix_expression { $<exp>$ = $<exp>1;}
 	|	INC unary_expression { $<ival>$ = ++$<ival>2; }
 	|	DEC unary_expression { $<ival>$ = --$<ival>2; }
 	|	unary_operator cast_expression
@@ -253,7 +254,7 @@ unary_operator:
 	;
 
 postfix_expression:
-		primary_expression
+		primary_expression { $<exp>$ = $<exp>1;}
 	|	postfix_expression '[' expression ']'
 	|	postfix_expression LPAREN RPAREN
 	|	postfix_expression LPAREN argument_expression_list RPAREN
@@ -268,14 +269,14 @@ argument_expression_list:
 
 
 if_statement:
-		IF LPAREN expression RPAREN statement
+		IF LPAREN expression RPAREN statement { cout << "el if!: " << endl; }
 	|	IF LPAREN expression RPAREN ELSE statement
 	;
 
 loop_statement:
-		WHILE LPAREN expression RPAREN statement
-	|	FOR LPAREN expression_statement expression_statement RPAREN statement
-	|	FOR LPAREN expression_statement expression_statement expression RPAREN statement
+		WHILE LPAREN expression RPAREN statement { cout << "el while!: " << endl; }
+	|	FOR LPAREN expression_statement expression_statement RPAREN statement { cout << "el for!: " << endl; }
+	|	FOR LPAREN expression_statement expression_statement expression RPAREN statement { cout << "el for!: " << endl; }
 	;
 
 compound_statement:
@@ -367,9 +368,9 @@ parameter_declaration:
 	;
 
 number:
-		INT { $<ival>$ = $<ival>1; }
-	|	TRUE { $<ival>$ = $<ival>1;}
-	|	FALSE { $<ival>$ = $<ival>1;}
+		INT { $<exp>$ = $<exp>1;}
+	|	TRUE { $<exp>$ = createNumber(1);}
+	|	FALSE { $<exp>$ = createNumber(0);}
 	|	FLOAT { $<fval>$ = $<fval>1; }
 	;
 	
@@ -379,6 +380,8 @@ string:
 	;
 
 %%
+
+extern "C" int yyparse();
 
 int main(int argc, char * argv[]) {
 	if(argc <= 1)

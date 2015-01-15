@@ -2,8 +2,8 @@ FILES	= Lexer.cpp Parser.cpp Expression.cpp main.cpp
 CC	= g++ --std=c++11
 CFLAGS	=  -o pony -ICore -IInterface -IObj
   
-default: Parser.tab.cc lex.yy.c PonyCore.o
-		$(CC) $(CFLAGS) Obj/Parser.tab.cc Obj/lex.yy.c Obj/PonyCore.o -lfl 
+default: Parser.tab.cc lex.yy.c PonyCore.o Expression.o
+		$(CC) $(CFLAGS) Obj/Parser.tab.cc Obj/lex.yy.c Obj/PonyCore.o Obj/Expression.o -lfl 
  
 lex.yy.c:	Interface/Lexer.l 
 		flex -o Obj/lex.yy.c Interface/Lexer.l
@@ -16,6 +16,9 @@ PonyCore.o:	Core/PonyCore.cpp
 
 core_test: main.cpp
 		$(CC) $(CFLAGS) main.cpp PonyCore.cpp	
+
+Expression.o: Core/Expression.cpp
+		$(CC) -c Core/Expression.cpp -o Obj/Expression.o
 
 clean:
 		rm Obj/* pony

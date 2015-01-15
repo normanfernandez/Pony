@@ -14,7 +14,10 @@ typedef enum tagEOperationType
     eSUBTRACT,
     eMULTIPLY,
     eDIVIDE,
-    ePLUS
+    ePLUS,
+    eLOGIC_OR,
+    eLOGIC_AND,
+    eXOR
 } EOperationType;
 
 /**
@@ -35,21 +38,10 @@ typedef struct tagSExpression
  * @return The expression or NULL in case of no memory
  */
 SExpression *createNumber(int value);
-
-/**
- * @brief It creates an operation
- * @param type The operation type
- * @param left The left operand
- * @param right The right operand
- * @return The expression or NULL in case of no memory
- */
+SExpression *allocateExpression();
+SExpression *allocateExpression(int num);
 SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right);
-
-/**
- * @brief Deletes a expression
- * @param b The expression
- */
-void deleteExpression(SExpression *b);
+void deleteExpression(SExpression **b);
 
 #endif // __EXPRESSION_H__
 /*

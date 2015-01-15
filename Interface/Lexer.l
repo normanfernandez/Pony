@@ -3,6 +3,7 @@
 #include <iostream>
 #include "PonyInt.h"
 #include "Parser.tab.hh"
+#include "Expression.hpp"
 using namespace std;
 int line_number = 1;
 #define YY_DECL extern "C" int yylex()
@@ -12,9 +13,21 @@ int line_number = 1;
 
 [ \t]        			{ ; }
 [-]?[0-9]+\.[0-9]+ 		{ yylval.fval = atof(yytext); return FLOAT; }
-[-]?[0-9]+         		{ yylval.ival = atoi(yytext); return INT; }
-\'(.)*\'  				{ yylval.sval = (char*)std::string(yytext).c_str(); return STRING_LITERAL;}
-\"(\\.|[^"])*\"			{ yylval.sval = strdup(yytext); return STRING;}
+[-]?[0-9]+         		{ yylval.exp = createNumber(atoi(yytext));return INT; }
+
+\'(.)*\'  				{ 
+							yylval.sval = new char; 
+							sscanf(yytext, "%s", yylval.sval);
+							yylval.sval = strtok(yylval.sval,"\'"); 
+							return STRING_LITERAL;
+						}
+\"(\\.|[^"])*\"			{ 
+							yylval.sval = new char; 
+							sscanf(yytext, "%s", yylval.sval);
+							yylval.sval = strtok(yylval.sval, "\"");
+							sprintf(yylval.sval, "%s", yylval.sval); 
+							return STRING;
+						}
 
 ':':					{ return COLON; }
 "..."					{ return ELLIPSIS; }
@@ -24,6 +37,13 @@ int line_number = 1;
 ;						{ return SEMICOLON; }
 .            			;
 ',':					{ return COMMA; }
+
+
+"+":					{ return ADD; }
+'-':\					{ return SUB; }
+\*:\					{ return MUL; }
+\/:\					{ return DIV; }
+'%':\					{ return MOD; }
 
 "++":\					{ return INC; }
 "--":\					{ return DEC; }
@@ -57,8 +77,14 @@ int line_number = 1;
 "if"					{ return IF; }
 "else"					{ return ELSE; }
 
-"true"					{  yylval.ival = 1; return TRUE; }
-"false"					{  yylval.ival = 0; return FALSE; }
+"true"					{  
+							yylval.exp = createNumber(1); 
+							return TRUE; 
+						}
+"false"					{  
+							yylval.exp = createNumber(0); 
+							return FALSE; 
+						}
 
 "continue"				{ return CONTINUE; }
 "break"					{ return BREAK; }
@@ -80,12 +106,6 @@ int line_number = 1;
 ("and")|("&&")			{ return AND_OP; }
 
 "byte_size"				{ return BSIZE; }
-
-"+":					{ return ADD; }
-'-':\					{ return SUB; }
-\*:\					{ return MUL; }
-\/:\					{ return DIV; }
-'%':\					{ return MOD; }
 
 [a-zA-Z_]*[a-zA-Z0-9_]+	{ yylval.sval = strdup(yytext); return TOKEN_ID;}
 

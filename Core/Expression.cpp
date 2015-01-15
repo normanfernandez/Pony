@@ -11,13 +11,16 @@
  */
 
 #include "Expression.hpp"
+#include <stdio.h>
 #include <stdlib.h>
 
 /**
  * @brief Allocates space for expression
  * @return The expression or NULL if not enough memory
  */
-static SExpression *allocateExpression()
+
+
+SExpression *allocateExpression(int num)
 {
     SExpression *b = new SExpression;
 
@@ -25,7 +28,7 @@ static SExpression *allocateExpression()
         return NULL;
 
     b->type = eVALUE;
-    b->value = 0;
+    b->value = num;
 
     b->left = NULL;
     b->right = NULL;
@@ -33,23 +36,22 @@ static SExpression *allocateExpression()
     return b;
 }
 
+
+SExpression *allocateExpression()
+{
+	return allocateExpression(0);
+}
+
 SExpression *createNumber(int value)
 {
-    SExpression *b = allocateExpression();
 
-    if (b == NULL)
-        return NULL;
-
-    b->type = eVALUE;
-    b->value = value;
-
+    SExpression *b = allocateExpression(value);
     return b;
 }
 
 SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right)
 {
     SExpression *b = allocateExpression();
-
     if (b == NULL)
         return NULL;
 
@@ -60,13 +62,13 @@ SExpression *createOperation(EOperationType type, SExpression *left, SExpression
     return b;
 }
 
-void deleteExpression(SExpression *b)
+void deleteExpression(SExpression **b)
 {
-    if (b == NULL)
+    if (*b == NULL)
         return;
 
-    deleteExpression(b->left);
-    deleteExpression(b->right);
+    deleteExpression(&((*b)->left));
+    deleteExpression(&((*b)->right));
 
-    delete b;
+    delete *b;
 }
