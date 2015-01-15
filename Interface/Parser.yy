@@ -156,7 +156,7 @@ expression:
 	;
 
 assignment_expression:
-		conditional_expression { $<ival>$ = $<ival>1; }
+		conditional_expression { $<exp>$ = $<exp>1; }
 	|	unary_expression assignment_operator assignment_expression 
 	;
 
@@ -210,21 +210,21 @@ and_expression:
 	
 equality_expression:
 		relational_expression { $<exp>$ = $<exp>1; }
-	|	equality_expression EQ_OP relational_expression { $<ival>$ = $<ival>1 == $<ival>3;  }
-	|	equality_expression NE_OP relational_expression { $<ival>$ = $<ival>1 != $<ival>3;  }
+	|	equality_expression EQ_OP relational_expression { $<exp>$ = createOperation(eEQUAL, $<exp>1, $<exp>3);  }
+	|	equality_expression NE_OP relational_expression { $<exp>$ = createOperation(eNEQUAL, $<exp>1, $<exp>3);  }
 	;
 relational_expression:
 		shift_expression { $<exp>$ = $<exp>1; }
-	|	relational_expression LTHAN shift_expression { $<ival>$ = $<ival>1 < $<ival>3;  }
-	|	relational_expression GTHAN shift_expression { $<ival>$ = $<ival>1 > $<ival>3;  }
-	|	relational_expression LEQU shift_expression { $<ival>$ = $<ival>1 <= $<ival>3;  }
-	|	relational_expression GEQU shift_expression { $<ival>$ = $<ival>1 >= $<ival>3;  }
+	|	relational_expression LTHAN shift_expression { $<exp>$ = createOperation(eLTHAN, $<exp>1, $<exp>3);  }
+	|	relational_expression GTHAN shift_expression { $<exp>$ = createOperation(eGTHAN, $<exp>1, $<exp>3);  }
+	|	relational_expression LEQU shift_expression { $<exp>$ = createOperation(eLETHAN, $<exp>1, $<exp>3);  }
+	|	relational_expression GEQU shift_expression { $<exp>$ = createOperation(eGETHAN, $<exp>1, $<exp>3);  }
 	;
 	
 shift_expression:
 		additive_expression { $<exp>$ = $<exp>1; }
-	|	shift_expression L_OP additive_expression { $<ival>$ = $<ival>1 << $<ival>3; }
-	|	shift_expression R_OP additive_expression { $<ival>$ = $<ival>1 >> $<ival>3; }
+	|	shift_expression L_OP additive_expression { $<exp>$ = createOperation(eLEFT, $<exp>1, $<exp>3);  }
+	|	shift_expression R_OP additive_expression { $<exp>$ = createOperation(eRIGHT, $<exp>1, $<exp>3);  }
 	;
 
 additive_expression:

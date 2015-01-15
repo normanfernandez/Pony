@@ -23,6 +23,18 @@ int line_number = 1;
 ("or")|("||")		{ return OR_OP; }
 ("and")|("&&")		{ return AND_OP; }
 
+("^")|("xor")			{ return XOR; }
+"<"					{ return LTHAN; }
+"<="					{ return LEQU; }
+"<<"					{ return L_OP; }
+"<<="					{ return L_EQU; }
+
+">"					{ return GTHAN; }
+">="					{ return GEQU; }
+">>"					{ return R_OP; }
+">>="					{ return R_EQU; }
+
+
 [ \t]        			{ ; }
 [-]?[0-9]+\.[0-9]+ 		{ yylval.fval = atof(yytext); return FLOAT; }
 [-]?[0-9]+         		{ yylval.exp = createNumber(atoi(yytext));return INT; }
@@ -33,6 +45,7 @@ int line_number = 1;
 							yylval.sval = strtok(yylval.sval,"\'"); 
 							return STRING_LITERAL;
 						}
+
 \"(\\.|[^"])*\"			{ 
 							yylval.sval = new char; 
 							sscanf(yytext, "%s", yylval.sval);
@@ -54,17 +67,6 @@ int line_number = 1;
 "++":\					{ return INC; }
 "--":\					{ return DEC; }
 '?':					{ return TERNARY; }
-
-("^")|("xor")			{ return XOR; }
-"<":					{ return LTHAN; }
-"<=":					{ return LEQU; }
-"<<":					{ return L_OP; }
-"<<=":					{ return L_EQU; }
-
-">":					{ return GTHAN; }
-">=":					{ return GEQU; }
-">>":					{ return R_OP; }
-">>=":					{ return R_EQU; }
 
 "=":					{ return EQUAL; }
 ("==")|("is")			{ return EQ_OP; }

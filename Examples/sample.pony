@@ -1,2 +1,1 @@
-if(false)
-	5 * 5;
+var <int> a;

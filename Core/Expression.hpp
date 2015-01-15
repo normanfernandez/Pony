@@ -21,6 +21,16 @@ typedef enum tagEOperationType
     eOR,
     eXOR,
     ePOW,
+    eLTHAN,
+    eGTHAN,
+    eLETHAN,
+    eGETHAN,
+    eEQUAL,
+    eNEQUAL,
+    eLEFT,
+    eRIGHT,
+    eLEFTE,
+    eRIGHTE,
     eMOD
 } EOperationType;
 

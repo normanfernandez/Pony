@@ -70,5 +70,4 @@ void deleteExpression(SExpression **exp)
 
     delete *exp;
     *exp = nullptr;
-    puts("termina bien el delete!");
 }

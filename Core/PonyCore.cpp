@@ -92,7 +92,7 @@ int evaluateIntExpression(SExpression *exp)
 		case eMULTIPLY:
 			return evaluateIntExpression(exp->left) * evaluateIntExpression(exp->right);
 		case eSUBTRACT:
-			return evaluateIntExpression(exp->left) + evaluateIntExpression(exp->right);
+			return evaluateIntExpression(exp->left) - evaluateIntExpression(exp->right);
 		case eDIVIDE:
 			return evaluateIntExpression(exp->left) / evaluateIntExpression(exp->right);
 		case eMOD:
@@ -109,6 +109,26 @@ int evaluateIntExpression(SExpression *exp)
 			return evaluateIntExpression(exp->left) ^ evaluateIntExpression(exp->right);
 		case ePOW:
 			return pow(evaluateIntExpression(exp->left),evaluateIntExpression(exp->right));
+		case eLTHAN:
+			return evaluateIntExpression(exp->left) < evaluateIntExpression(exp->right);
+		case eLETHAN:
+			return evaluateIntExpression(exp->left) <= evaluateIntExpression(exp->right);
+		case eGTHAN:
+			return evaluateIntExpression(exp->left) > evaluateIntExpression(exp->right);
+		case eGETHAN:
+			return evaluateIntExpression(exp->left) >= evaluateIntExpression(exp->right);
+		case eEQUAL:
+			return evaluateIntExpression(exp->left) == evaluateIntExpression(exp->right);
+		case eNEQUAL:
+			return evaluateIntExpression(exp->left) != evaluateIntExpression(exp->right);
+		case eLEFT:
+			return evaluateIntExpression(exp->left) << evaluateIntExpression(exp->right);
+		case eRIGHT:
+			return evaluateIntExpression(exp->left) >> evaluateIntExpression(exp->right);
+		case eLEFTE:
+			return evaluateIntExpression(exp->left) << evaluateIntExpression(exp->right);
+		case eRIGHTE:
+			return evaluateIntExpression(exp->left) >> evaluateIntExpression(exp->right);
 		case eVALUE:
 			return exp->value;
 
