@@ -40,10 +40,11 @@ int line_number = 1;
 [-]?[0-9]+         		{ yylval.exp = createNumber(atoi(yytext));return INT; }
 
 \'(.)*\'  				{ 
-							yylval.sval = new char; 
-							sscanf(yytext, "%s", yylval.sval);
+							/*yylval.sval = new char; 
+							sscanf(yytext, "%s", yylval.sval);*/
+							yylval.sval = strdup(yytext);
 							yylval.sval = strtok(yylval.sval,"\'");
-							yylval.exp = createStr(yylval.sval); 
+							yylval.exp = createStr(yylval.sval);
 							return STRING_LITERAL;
 						}
 
@@ -94,7 +95,8 @@ int line_number = 1;
 							return FALSE; 
 						}
 
-"println"				{ return PRINTLN; }
+("println")|("writeln")	{ return PRINTLN; }
+("print")|("write")		{ return PRINTNL; }
 "continue"				{ return CONTINUE; }
 "break"					{ return BREAK; }
 "return"				{ return RETURN; }
@@ -104,8 +106,7 @@ int line_number = 1;
 "int"					{ yylval.ival = eINT; return TYPE_INT; }
 "long"					{ yylval.ival = eLONG; return TYPE_LONG; }
 "end"        			{ return TOKEN_END; }
-"print"      			{ return TOKEN_PRINT; }
-"read"					{ return TOKEN_READ; }
+("read")|("input")		{ return TOKEN_READ; }
 "while"					{ return WHILE; }
 "for"					{ return FOR;}
 "var"        			{ return VAR; }

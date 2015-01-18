@@ -81,6 +81,13 @@ void setInteger(IntegerStruct ** int_struct, intptr_t num){
 	}
 }
 
+char * strInput()
+{
+	std::string ss;
+	std::cin >> ss;
+	return (char*)(ss.c_str());
+}
+
 std::string evaluateExpression(SExpression *exp)
 {
 	if(exp->type == eSTRING)

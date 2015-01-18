@@ -26,6 +26,7 @@ static std::map<const char*, IntegerStruct*> int_list;
 void allocateInteger(const char *, pony_byte);
 std::string getInteger(IntegerStruct*);
 void setInteger(IntegerStruct**, intptr_t);
+char * strInput();
 std::string evaluateExpression(SExpression *);
 int evaluateIntExpression(SExpression *);
 #endif

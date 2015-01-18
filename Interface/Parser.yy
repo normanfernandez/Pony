@@ -29,6 +29,7 @@ int yywrap();
 %token TOKEN_BEGIN
 %token TOKEN_END
 %token PRINTLN
+%token PRINTNL
 %token WHILE
 %token BREAK
 %token FOR 
@@ -37,7 +38,6 @@ int yywrap();
 %token IF
 %token ELSE
 %token RETURN
-%token TOKEN_PRINT
 %token TOKEN_READ
 %token PONY 
 %token VAR
@@ -106,7 +106,7 @@ statement:
 		expression_statement 
 		{
 			if($<exp>1->type == eSTRING)
-				cout << "el string: " << $<exp>1->str << endl;
+				cout << "el string: " << evaluateExpression($<exp>1) << endl;
 			else
 				printf("expression result: %i\n", evaluateIntExpression($<exp>1));
 			//deleteExpression(&$<exp>1);
@@ -249,6 +249,15 @@ unary_expression:
 		{
 			cout << evaluateExpression($<exp>3) << endl;
 			$<exp>$ = createNumber(0);
+		}
+	|	PRINTNL LPAREN expression RPAREN
+		{
+			cout << evaluateExpression($<exp>3);
+			$<exp>$ = createNumber(0);
+		}
+	|	TOKEN_READ LPAREN RPAREN
+		{
+			$<exp>$ = createStr(strInput());
 		}
 	;
 unary_operator:
