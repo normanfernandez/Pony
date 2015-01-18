@@ -42,7 +42,6 @@ SExpression *allocateExpression()
 
 SExpression *createNumber(int value)
 {
-
     SExpression *exp = allocateExpression(value);
     return exp;
 }

@@ -26,7 +26,7 @@ void yyerror(const char *);
 
 // define the keywords token:
 %token TOKEN_BEGIN
-%token END
+%token TOKEN_END
 %token WHILE
 %token BREAK
 %token FOR 
@@ -83,6 +83,7 @@ void yyerror(const char *);
 
 %left ADD SUB
 %left MUL DIV MOD BSIZE OR XOR AND POW
+%right EQUAL
 
 %token <ival> INT
 %token <fval> FLOAT
@@ -97,32 +98,14 @@ pony:
 		{ cout << "done with a pony file!" << endl; }
 	;
 
-translation_unit:
-		external_declaration
-	|	translation_unit external_declaration
-	;
-
-external_declaration:
-		function_definition
-	|	declaration
-	;
-
-function_definition:
-		declaration_specifiers direct_declarator declaration_list compound_statement
-	|	declaration_specifiers direct_declarator compound_statement
-	|	direct_declarator declaration_list compound_statement
-	|	direct_declarator compound_statement
-	;
-
 statement:
 		expression_statement 
 		{
-			$<ival>$ = $<ival>1;
-			printf("expression result: %i\n", $<ival>1);
+			printf("expression result: %i\n", evaluateIntExpression($<exp>1));
+			deleteExpression(&$<exp>1);
 		}
 	|	if_statement 
 	|	declaration
-	|	function_definition
 	|	loop_statement
 	|	jump_statement
 	;
@@ -139,8 +122,7 @@ expression_statement:
 		}
 	|	expression SEMICOLON 
 		{ 
-			$<ival>$ = evaluateIntExpression($<exp>1); 
-			deleteExpression(&$<exp>1); 
+			$<exp>$ =  $<exp>1;
 		}
 	;
 
@@ -152,26 +134,20 @@ primary_expression:
 	
 expression:
 		assignment_expression { $<exp>$ = $<exp>1; }
-	|	expression COMMA assignment_expression
 	;
 
 assignment_expression:
 		conditional_expression { $<exp>$ = $<exp>1; }
-	|	unary_expression assignment_operator assignment_expression 
-	;
-
-assignment_operator:
-		EQ_OP
-	|	NE_OP
-	|	MUL_EQU
-	|	ADD_EQU
-	|	SUB_EQU
-	|	DIV_EQU
-	|	XOR_EQU
-	|	AND_EQU
-	|	OR_EQU
-	|	L_EQU
-	|	R_EQU
+	|	unary_expression EQ_OP assignment_expression 
+	|	unary_expression NE_OP assignment_expression
+	|	unary_expression MUL_EQU assignment_expression
+	|	unary_expression ADD_EQU assignment_expression
+	|	unary_expression SUB_EQU assignment_expression
+	|	unary_expression DIV_EQU assignment_expression
+	|	unary_expression AND_EQU assignment_expression
+	|	unary_expression OR_EQU assignment_expression
+	|	unary_expression L_EQU assignment_expression
+	|	unary_expression R_EQU assignment_expression
 	;
 
 constant_expression:
@@ -234,51 +210,36 @@ additive_expression:
 	;
 
 multiplicative_expression:
-		cast_expression { $<exp>$ = $<exp>1; }
-	|	multiplicative_expression MUL cast_expression { $<exp>$ = createOperation(eMULTIPLY, $<exp>1, $<exp>3); }
-	|	multiplicative_expression DIV cast_expression { $<exp>$ = createOperation(eDIVIDE, $<exp>1, $<exp>3); }
-	|	multiplicative_expression MOD cast_expression { $<exp>$ = createOperation(eMOD, $<exp>1, $<exp>3); }
-	|	multiplicative_expression POW cast_expression { $<exp>$ = createOperation(ePOW, $<exp>1, $<exp>3); }
-	;
-	
-cast_expression:
 		unary_expression { $<exp>$ = $<exp>1; }
-	|	LPAREN type_specifier RPAREN cast_expression
+	|	multiplicative_expression MUL unary_expression { $<exp>$ = createOperation(eMULTIPLY, $<exp>1, $<exp>3); }
+	|	multiplicative_expression DIV unary_expression { $<exp>$ = createOperation(eDIVIDE, $<exp>1, $<exp>3); }
+	|	multiplicative_expression MOD unary_expression { $<exp>$ = createOperation(eMOD, $<exp>1, $<exp>3); }
+	|	multiplicative_expression POW unary_expression { $<exp>$ = createOperation(ePOW, $<exp>1, $<exp>3); }
 	;
 	
 unary_expression:
 		postfix_expression { $<exp>$ = $<exp>1;}
 	|	INC unary_expression { $<ival>$ = ++$<ival>2; }
 	|	DEC unary_expression { $<ival>$ = --$<ival>2; }
-	|	unary_operator cast_expression
 	|	BSIZE unary_expression
 	|	BSIZE LPAREN type_specifier RPAREN
 	;
 unary_operator:
 		AND
-	| 	'+' 
-	|	'-' 
+	| 	ADD 
+	|	SUB 
 	|	'~' 
 	|	'!'
 	;
 
 postfix_expression:
 		primary_expression { $<exp>$ = $<exp>1;}
-	|	postfix_expression '[' expression ']'
-	|	postfix_expression LPAREN RPAREN
-	|	postfix_expression LPAREN argument_expression_list RPAREN
-	|	postfix_expression INC { $<ival>$ = $<ival>1++; }
-	|	postfix_expression DEC { $<ival>$ = $<ival>1--; }
+	|	postfix_expression INC 
+	|	postfix_expression DEC 
 	;
 	
-argument_expression_list:
-		assignment_expression
-	|	argument_expression_list COMMA assignment_expression
-	;
-
-
 if_statement:
-		IF LPAREN expression RPAREN statement 
+		IF LPAREN expression RPAREN compound_statement 
 		{ 
 			if(evaluateIntExpression($<exp>3))
 			{
@@ -286,27 +247,26 @@ if_statement:
 				$<exp>$ = $<exp>5;
 			} 
 		}
-	|	IF LPAREN expression RPAREN ELSE statement
+	|	IF LPAREN expression RPAREN compound_statement ELSE compound_statement
 	;
 
 loop_statement:
-		WHILE LPAREN expression RPAREN statement { cout << "el while!: " << endl; }
-	|	FOR LPAREN expression_statement expression_statement RPAREN statement { cout << "el for!: " << endl; }
-	|	FOR LPAREN expression_statement expression_statement expression RPAREN statement { cout << "el for!: " << endl; }
+		WHILE LPAREN expression RPAREN compound_statement { cout << "el while!: " << endl; }
+	|	FOR LPAREN expression_statement expression_statement RPAREN compound_statement { cout << "el for!: " << endl; }
+	|	FOR LPAREN expression_statement expression_statement expression RPAREN compound_statement { cout << "el for!: " << endl; }
 	;
 
 compound_statement:
-		TOKEN_BEGIN END
-	|	TOKEN_BEGIN statement_list END
-	|	TOKEN_BEGIN declaration_list END
-	|	TOKEN_BEGIN declaration_list statement_list END
+		statement
+	|	TOKEN_BEGIN TOKEN_END
+	|	TOKEN_BEGIN statement_list TOKEN_END
+	|	TOKEN_BEGIN declaration_list TOKEN_END
+	|	TOKEN_BEGIN declaration_list statement_list TOKEN_END
 	;
 
 jump_statement:
 		CONTINUE SEMICOLON
 	|	BREAK SEMICOLON
-	|	RETURN SEMICOLON
-	|	RETURN expression SEMICOLON { cout << "expression: " << evaluateIntExpression($<exp>2) << endl;}
 	;
 
 
@@ -318,7 +278,8 @@ declaration:
 declaration_specifiers:
 		type_specifier
 	|	type_specifier declaration_specifiers
-	|	VAR LTHAN declaration_specifiers GTHAN EQ_OP expression
+	|	VAR LTHAN declaration_specifiers GTHAN TOKEN_ID;
+	|	VAR TOKEN_ID EQUAL expression
 	;
 
 type_specifier:
@@ -331,10 +292,6 @@ type_specifier:
 direct_declarator:
 		TOKEN_ID
 	|	LPAREN direct_declarator RPAREN
-	|	direct_declarator '[' constant_expression ']'
-	|	direct_declarator LPAREN parameter_type_list RPAREN
-	|	direct_declarator LPAREN identifier_list RPAREN
-	|	direct_declarator LPAREN RPAREN
 	;
 
 declaration_list:
@@ -342,19 +299,9 @@ declaration_list:
 	|	declaration_list declaration
 	;	
 
-parameter_type_list:
-		parameter_list
-	|	parameter_list COMMA ELLIPSIS
-	;
-
 identifier_list:
 		TOKEN_ID
 	| 	identifier_list COMMA TOKEN_ID
-	;
-
-parameter_list:
-		parameter_declaration
-	|	parameter_list COMMA parameter_declaration
 	;
 
 init_declarator:
@@ -364,29 +311,20 @@ init_declarator:
 	
 initializer:
 		assignment_expression
-	|	'{' initializer_list '}'
-	| 	'{' initializer_list COMMA '}'
 	;
 
 initializer_list:
 		initializer
-	|	initializer_list COMMA initializer
 	;
 
 init_declarator_list:
 		init_declarator
-	|	init_declarator_list COMMA init_declarator
-	;
-
-parameter_declaration:
-		declaration_specifiers direct_declarator
-	|	declaration_specifiers
 	;
 
 number:
 		INT { $<exp>$ = $<exp>1;}
-	|	TRUE { $<exp>$ = createNumber(1);}
-	|	FALSE { $<exp>$ = createNumber(0);}
+	|	TRUE { $<exp>$ = $<exp>1;}
+	|	FALSE { $<exp>$ = $<exp>1;}
 	|	FLOAT { $<fval>$ = $<fval>1; }
 	;
 	

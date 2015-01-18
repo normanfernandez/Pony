@@ -100,7 +100,7 @@ int line_number = 1;
 "short"					{ yylval.ival = eSHORT; return TYPE_SHORT; }
 "int"					{ yylval.ival = eINT; return TYPE_INT; }
 "long"					{ yylval.ival = eLONG; return TYPE_LONG; }
-"end"        			{ return END; }
+"end"        			{ return TOKEN_END; }
 "print"      			{ return TOKEN_PRINT; }
 "read"					{ return TOKEN_READ; }
 "while"					{ return WHILE; }
