@@ -33,6 +33,7 @@ typedef enum tagEOperationType
     eLEFTE,
     eRIGHTE,
     eSTRING,
+	eCONCAT,
     eMOD
 } EOperationType;
 

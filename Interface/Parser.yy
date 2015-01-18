@@ -28,6 +28,7 @@ int yywrap();
 // define the keywords token:
 %token TOKEN_BEGIN
 %token TOKEN_END
+%token PRINTLN
 %token WHILE
 %token BREAK
 %token FOR 
@@ -41,6 +42,7 @@ int yywrap();
 %token PONY 
 %token VAR
 %token SQRT
+%token CBRT
 %token TYPE_BYTE
 %token COLON
 %token TYPE_SHORT
@@ -83,7 +85,7 @@ int yywrap();
 %token ELLIPSIS
 %token WS
 
-%left ADD SUB
+%left ADD SUB CONCAT
 %left MUL DIV MOD BSIZE OR XOR AND POW
 %right EQUAL
 
@@ -139,6 +141,12 @@ primary_expression:
 	
 expression:
 		assignment_expression { $<exp>$ = $<exp>1; }
+	|	concat_expression { $<exp>$ = $<exp>1; }
+	;
+	
+concat_expression:
+		concat_expression
+	|	string CONCAT string { }
 	;
 
 assignment_expression:
@@ -229,9 +237,18 @@ unary_expression:
 	|	DEC unary_expression { $<ival>$ = --$<ival>2; }
 	|	BSIZE unary_expression
 	|	BSIZE LPAREN type_specifier RPAREN
-	|	SQRT LPAREN number RPAREN 
+	|	SQRT LPAREN expression RPAREN 
 		{
 			$<exp>$ = createNumber((int)sqrt(evaluateIntExpression($<exp>3)));
+		}
+	|	CBRT LPAREN expression RPAREN 
+		{
+			$<exp>$ = createNumber((int)cbrt(evaluateIntExpression($<exp>3)));
+		}
+	|	PRINTLN LPAREN expression RPAREN
+		{
+			cout << evaluateExpression($<exp>3) << endl;
+			$<exp>$ = createNumber(0);
 		}
 	;
 unary_operator:

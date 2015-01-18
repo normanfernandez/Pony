@@ -62,7 +62,7 @@ int line_number = 1;
 \)						{ return RPAREN; }
 \n           			{++line_number; }
 ;						{ return SEMICOLON; }
-.            			;
+.            			{ return CONCAT; }
 ',':					{ return COMMA; }
 
 
@@ -94,6 +94,7 @@ int line_number = 1;
 							return FALSE; 
 						}
 
+"println"				{ return PRINTLN; }
 "continue"				{ return CONTINUE; }
 "break"					{ return BREAK; }
 "return"				{ return RETURN; }
@@ -111,6 +112,7 @@ int line_number = 1;
 
 "byte_size"				{ return BSIZE; }
 "sqrt"					{ return SQRT; }
+"cbrt"					{ return CBRT; }
 
 [a-zA-Z_]*[a-zA-Z0-9_]+	{ 
 							yylval.sval = new char; 
