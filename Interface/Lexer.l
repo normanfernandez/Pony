@@ -110,6 +110,7 @@ int line_number = 1;
 "var"        			{ return VAR; }
 
 "byte_size"				{ return BSIZE; }
+"sqrt"					{ return SQRT; }
 
 [a-zA-Z_]*[a-zA-Z0-9_]+	{ 
 							yylval.sval = new char; 

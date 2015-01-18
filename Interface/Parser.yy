@@ -4,6 +4,7 @@
 #include "PonyCore.h"
 #include "PonyInt.h"
 #include "Expression.hpp"
+#include <cmath>
 #define PONY_VERSION "Pony Version 0.6"
 
 using namespace std;
@@ -39,6 +40,7 @@ int yywrap();
 %token TOKEN_READ
 %token PONY 
 %token VAR
+%token SQRT
 %token TYPE_BYTE
 %token COLON
 %token TYPE_SHORT
@@ -227,6 +229,10 @@ unary_expression:
 	|	DEC unary_expression { $<ival>$ = --$<ival>2; }
 	|	BSIZE unary_expression
 	|	BSIZE LPAREN type_specifier RPAREN
+	|	SQRT LPAREN number RPAREN 
+		{
+			$<exp>$ = createNumber((int)sqrt(evaluateIntExpression($<exp>3)));
+		}
 	;
 unary_operator:
 		AND

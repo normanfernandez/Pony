@@ -1,4 +1,3 @@
-FILES	= Lexer.cpp Parser.cpp Expression.cpp main.cpp
 CC	= g++ --std=gnu++11
 CFLAGS	=  -o pony -ICore -IInterface -IObj
   
