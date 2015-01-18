@@ -11,20 +11,13 @@
  */
 
 #include "Expression.hpp"
+#include <cmath>
 #include <cstdio>
-/**
- * @brief Allocates space for expression
- * @return The expression or nullptr if not enough memory
- */
 
 
 SExpression *allocateExpression(int num)
 {
     SExpression *exp = new SExpression;
-
-    if (exp == nullptr)
-        return nullptr;
-
     exp->type = eVALUE;
     exp->value = num;
 
@@ -34,6 +27,18 @@ SExpression *allocateExpression(int num)
     return exp;
 }
 
+SExpression *allocateExpression(char * str)
+{
+    SExpression *exp = new SExpression;
+    exp->type = eSTRING;
+    exp->str = std::string(str);
+    exp->value = -1;
+
+    exp->left = nullptr;
+    exp->right = nullptr;
+
+    return exp;
+}
 
 SExpression *allocateExpression()
 {
@@ -42,7 +47,13 @@ SExpression *allocateExpression()
 
 SExpression *createNumber(int value)
 {
-    SExpression *exp = allocateExpression(value);
+    SExpression *exp = allocateExpression((int)value);
+    return exp;
+}
+
+SExpression *createStr(char * str)
+{
+    SExpression *exp = allocateExpression((char*)str);
     return exp;
 }
 

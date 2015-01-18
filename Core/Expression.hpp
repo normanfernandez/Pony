@@ -4,6 +4,7 @@
  */
 #ifndef __EXPRESSION_H__
 #define __EXPRESSION_H__
+#include <string>
 
 /**
  * @brief The operation type
@@ -31,17 +32,15 @@ typedef enum tagEOperationType
     eRIGHT,
     eLEFTE,
     eRIGHTE,
+    eSTRING,
     eMOD
 } EOperationType;
 
-/**
- * @brief The expression structure
- */
 typedef struct tagSExpression
 {
     EOperationType type;///< type of operation
-
     int value;///< valid only when type is eVALUE
+    std::string str;
     struct tagSExpression *left; ///< left side of the tree
     struct tagSExpression *right;///< right side of the tree
 } SExpression;
@@ -52,6 +51,7 @@ typedef struct tagSExpression
  * @return The expression or NULL in case of no memory
  */
 SExpression *createNumber(int value);
+SExpression *createStr(char * str);
 SExpression *allocateExpression();
 SExpression *allocateExpression(int num);
 SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right);

@@ -42,7 +42,8 @@ int line_number = 1;
 \'(.)*\'  				{ 
 							yylval.sval = new char; 
 							sscanf(yytext, "%s", yylval.sval);
-							yylval.sval = strtok(yylval.sval,"\'"); 
+							yylval.sval = strtok(yylval.sval,"\'");
+							yylval.exp = createStr(yylval.sval); 
 							return STRING_LITERAL;
 						}
 
@@ -50,7 +51,8 @@ int line_number = 1;
 							yylval.sval = new char; 
 							sscanf(yytext, "%s", yylval.sval);
 							yylval.sval = strtok(yylval.sval, "\"");
-							sprintf(yylval.sval, "%s", yylval.sval); 
+							sprintf(yylval.sval, "%s", yylval.sval);
+							yylval.exp = createStr(yylval.sval); 
 							return STRING;
 						}
 
@@ -112,7 +114,7 @@ int line_number = 1;
 [a-zA-Z_]*[a-zA-Z0-9_]+	{ 
 							yylval.sval = new char; 
 							sscanf(yytext, "%s", yylval.sval);
-							
+							yylval.exp = createStr(yylval.sval);
 							return TOKEN_ID;
 						}
 

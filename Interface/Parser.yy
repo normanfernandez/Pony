@@ -13,7 +13,6 @@ extern "C" int yylex();
 extern "C" int yyparse();
 extern "C" FILE *yyin;
 extern int line_number;
- 
 void yyerror(const char *);
 int yywrap();
 %}
@@ -102,8 +101,11 @@ pony:
 statement:
 		expression_statement 
 		{
-			printf("expression result: %i\n", evaluateIntExpression($<exp>1));
-			deleteExpression(&$<exp>1);
+			if($<exp>1->type == eSTRING)
+				cout << "el string: " << $<exp>1->str << endl;
+			else
+				printf("expression result: %i\n", evaluateIntExpression($<exp>1));
+			//deleteExpression(&$<exp>1);
 		}
 	|	if_statement 
 	|	declaration
@@ -128,8 +130,8 @@ expression_statement:
 	;
 
 primary_expression:
-		string {cout << "str generico es: " << yylval.sval << endl;}
-	|	number { $<exp>$ = yylval.exp;}
+		string { $<exp>$ = $<exp>1; }
+	|	number { $<exp>$ = $<exp>1; }
 	|	LPAREN expression RPAREN { $<exp>$ = $<exp>2; }
 	;
 	
@@ -207,7 +209,8 @@ shift_expression:
 additive_expression:
 		multiplicative_expression { $<exp>$ = $<exp>1;}
 	|	additive_expression ADD multiplicative_expression {$<exp>$ = createOperation(ePLUS, $<exp>1, $<exp>3);}
-	|	additive_expression SUB  multiplicative_expression { $<exp>$ = createOperation(eSUBTRACT, $<exp>1, $<exp>2); }
+	|	additive_expression SUB multiplicative_expression {$<exp>$ = createOperation(eSUBTRACT, $<exp>1, $<exp>3);}
+	|	additive_expression multiplicative_expression { $<exp>$ = createOperation(ePLUS, $<exp>1, $<exp>2); }
 	;
 
 multiplicative_expression:
@@ -330,8 +333,8 @@ number:
 	;
 	
 string:
-		STRING
-	|	STRING_LITERAL
+		STRING { $<exp>$ = $<exp>1; }
+	|	STRING_LITERAL { $<exp>$ = $<exp>1; }
 	;
 
 %%
