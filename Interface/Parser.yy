@@ -15,6 +15,7 @@ extern "C" FILE *yyin;
 extern int line_number;
  
 void yyerror(const char *);
+int yywrap();
 %}
 
 %union {
@@ -356,10 +357,5 @@ int main(int argc, char * argv[]) {
 	{
 		yyparse();
 	} while (!feof(yyin));
-	
-}
-
-void yyerror(const char *s) {
-	cerr << "Parse error!  Line: " << line_number << " Message: " << s << endl;
-	exit(-1);
+	return 0;
 }

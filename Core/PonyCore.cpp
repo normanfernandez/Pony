@@ -20,7 +20,6 @@ extern "C" void yyerror(const char*);
 void allocateInteger(const char * var_label,pony_byte size){
 	if(int_list.find(var_label) != int_list.end()){
 		std::cerr << "variable already declared!" << std::endl;
-		exit(-1);
 	}
 	int_list[var_label] = new IntegerStruct;
 	int_list[var_label]->size = size;

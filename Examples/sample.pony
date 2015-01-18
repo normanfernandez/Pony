@@ -1,4 +1,4 @@
-true * false;
-5**5;
-1024 >> 2;
-true + true;
+(1+2+3)*5;
+true xor true;
+"windows string!";
+42;

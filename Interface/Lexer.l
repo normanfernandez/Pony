@@ -109,6 +109,20 @@ int line_number = 1;
 
 "byte_size"				{ return BSIZE; }
 
-[a-zA-Z_]*[a-zA-Z0-9_]+	{ yylval.sval = strdup(yytext); return TOKEN_ID;}
+[a-zA-Z_]*[a-zA-Z0-9_]+	{ 
+							yylval.sval = new char; 
+							sscanf(yytext, "%s", yylval.sval);
+							
+							return TOKEN_ID;
+						}
 
 %%
+
+void yyerror(const char *s) {
+	cerr << "Parse error!  Line: " << line_number << " Message: " << s << endl;
+}
+
+int yywrap()
+{
+	return 1;
+}
