@@ -26,7 +26,13 @@ static std::map<const char*, IntegerStruct*> int_list;
 void allocateInteger(const char *, pony_byte);
 std::string getInteger(IntegerStruct*);
 void setInteger(IntegerStruct**, intptr_t);
+pony_byte byteInput();
+pony_int intInput();
+pony_short shortInput();
+pony_long longInput();
 char * strInput();
+std::string to_string(SExpression *);
 std::string evaluateExpression(SExpression *);
 int evaluateIntExpression(SExpression *);
+float evaluateFloatExpression(SExpression *exp);
 #endif

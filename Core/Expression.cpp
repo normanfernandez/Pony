@@ -11,15 +11,45 @@
  */
 
 #include "Expression.hpp"
+#include "PonyInt.h"
+#include "PonyCore.h"
 #include <cmath>
 #include <cstdio>
 
+
+SExpression *allocateVariable(int num, PonyInt size)
+{
+    SExpression *exp = new SExpression;
+    exp->type = eIVARIABLE;
+    exp->value = num;
+    exp->variable = new IntegerStruct;
+    exp->variable->size = size;
+    setInteger(&exp->variable, num);
+
+    exp->left = nullptr;
+    exp->right = nullptr;
+
+    return exp;
+}
 
 SExpression *allocateExpression(int num)
 {
     SExpression *exp = new SExpression;
     exp->type = eVALUE;
     exp->value = num;
+
+    exp->left = nullptr;
+    exp->right = nullptr;
+
+    return exp;
+}
+
+SExpression *allocateFloatExpression(float num)
+{
+	SExpression *exp = new SExpression;
+    exp->type = eFLOAT;
+    exp->fvalue = num;
+    exp->isfloat =1;
 
     exp->left = nullptr;
     exp->right = nullptr;
@@ -51,6 +81,12 @@ SExpression *createNumber(int value)
     return exp;
 }
 
+SExpression *createFloatNumber(float value)
+{
+	SExpression *exp = allocateFloatExpression((float)value);
+	return exp;
+}
+
 SExpression *createStr(char * str)
 {
     SExpression *exp = allocateExpression((char*)str);
@@ -59,9 +95,13 @@ SExpression *createStr(char * str)
 
 SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right)
 {
-    SExpression *exp = allocateExpression();
-    if (exp == nullptr)
-        return nullptr;
+	if(type == eCONCAT)
+	{
+		std::string str = evaluateExpression(left) + evaluateExpression(right);
+		return createStr((char*)str.c_str());
+	}
+
+	SExpression *exp = allocateExpression();
 
     exp->type = type;
     exp->left = left;

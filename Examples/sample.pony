@@ -1,1 +1,1 @@
-input();
+print((input().'pepon').'lol');

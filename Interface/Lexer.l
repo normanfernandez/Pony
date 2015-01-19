@@ -17,6 +17,7 @@ int line_number = 1;
 "-"					{ return SUB; }
 "*"					{ return MUL; }
 "/"					{ return DIV; }
+"=>"					{ puts("ter!");return TERNARY; }
 ("%")|("mod")		{ return MOD; }
 ("**")|("pow")		{ return POW; }
 
@@ -36,12 +37,10 @@ int line_number = 1;
 
 
 [ \t]        			{ ; }
-[-]?[0-9]+\.[0-9]+ 		{ yylval.fval = atof(yytext); return FLOAT; }
+[-]?[0-9]+\.[0-9]+ 		{ yylval.fval = atof(yytext);return FLOAT; }
 [-]?[0-9]+         		{ yylval.exp = createNumber(atoi(yytext));return INT; }
 
-\'(.)*\'  				{ 
-							/*yylval.sval = new char; 
-							sscanf(yytext, "%s", yylval.sval);*/
+\'(\\.|[^'])*\'  				{ 
 							yylval.sval = strdup(yytext);
 							yylval.sval = strtok(yylval.sval,"\'");
 							yylval.exp = createStr(yylval.sval);
@@ -49,11 +48,9 @@ int line_number = 1;
 						}
 
 \"(\\.|[^"])*\"			{ 
-							yylval.sval = new char; 
-							sscanf(yytext, "%s", yylval.sval);
-							yylval.sval = strtok(yylval.sval, "\"");
-							sprintf(yylval.sval, "%s", yylval.sval);
-							yylval.exp = createStr(yylval.sval); 
+							yylval.sval = strdup(yytext);
+							yylval.sval = strtok(yylval.sval,"\"");
+							yylval.exp = createStr(yylval.sval);
 							return STRING;
 						}
 
@@ -63,13 +60,12 @@ int line_number = 1;
 \)						{ return RPAREN; }
 \n           			{++line_number; }
 ;						{ return SEMICOLON; }
-.            			{ return CONCAT; }
+"."            			{ return CONCAT; }
 ',':					{ return COMMA; }
 
 
 "++":\					{ return INC; }
 "--":\					{ return DEC; }
-'?':					{ return TERNARY; }
 
 "=":					{ return EQUAL; }
 ("==")|("is")			{ return EQ_OP; }
@@ -104,7 +100,10 @@ int line_number = 1;
 "byte"					{ yylval.ival = eBYTE; return TYPE_BYTE; }
 "short"					{ yylval.ival = eSHORT; return TYPE_SHORT; }
 "int"					{ yylval.ival = eINT; return TYPE_INT; }
+"float"					{ yylval.ival = eFLOAT; return TYPE_FLOAT; }
 "long"					{ yylval.ival = eLONG; return TYPE_LONG; }
+"string"				{ yylval.ival = eSTRING; return TYPE_STRING; }
+"to_string"				{ return TO_STRING; }
 "end"        			{ return TOKEN_END; }
 ("read")|("input")		{ return TOKEN_READ; }
 "while"					{ return WHILE; }

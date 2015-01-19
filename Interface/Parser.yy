@@ -49,6 +49,7 @@ int yywrap();
 %token TERNARY
 %token TYPE_INT
 %token TYPE_LONG
+%token TYPE_FLOAT
 
 %token OR_OP
 
@@ -67,6 +68,7 @@ int yywrap();
 
 %token R_OP
 %token L_OP
+%token TYPE_STRING
 %token AND_OP
 %token GEQU
 %token LEQU
@@ -77,15 +79,17 @@ int yywrap();
 %token FALSE
 %token GTHAN
 %token EQ_OP
+%token TO_STRING
 %token NE_OP
 %token LPAREN
 %token RPAREN
 %token COMMA
+%token CONCAT
 %token SEMICOLON
 %token ELLIPSIS
 %token WS
 
-%left ADD SUB CONCAT
+%left ADD SUB
 %left MUL DIV MOD BSIZE OR XOR AND POW
 %right EQUAL
 
@@ -105,11 +109,7 @@ pony:
 statement:
 		expression_statement 
 		{
-			if($<exp>1->type == eSTRING)
-				cout << "el string: " << evaluateExpression($<exp>1) << endl;
-			else
-				printf("expression result: %i\n", evaluateIntExpression($<exp>1));
-			//deleteExpression(&$<exp>1);
+			deleteExpression(&$<exp>1);
 		}
 	|	if_statement 
 	|	declaration
@@ -145,8 +145,10 @@ expression:
 	;
 	
 concat_expression:
-		concat_expression
-	|	string CONCAT string { }
+		string { $<exp>$ = $<exp>1; }
+	|	string CONCAT string { $<exp>$ = createOperation(eCONCAT, $<exp>1, $<exp>3); }
+	|	string CONCAT expression { $<exp>$ = createOperation(eCONCAT, $<exp>1, $<exp>3);}
+	|	expression CONCAT string { $<exp>$ = createOperation(eCONCAT, $<exp>1, $<exp>3);}
 	;
 
 assignment_expression:
@@ -169,7 +171,14 @@ constant_expression:
 
 conditional_expression:
 		logical_or_expression { $<exp>$ = $<exp>1; }
-	|	logical_or_expression TERNARY expression COLON conditional_expression { $<ival>$ = ($<ival>1 ? $<ival>3 : $<ival>5 );}
+	|	logical_or_expression TERNARY expression COLON expression 
+		{
+			 if(evaluateIntExpression($<exp>1))
+			 	$<exp>$ = createNumber(evaluateIntExpression($<exp>3));
+			 else
+			 	$<exp>$ = createNumber(evaluateIntExpression($<exp>5));
+			 
+		}
 	;
 	
 logical_or_expression:
@@ -255,9 +264,25 @@ unary_expression:
 			cout << evaluateExpression($<exp>3);
 			$<exp>$ = createNumber(0);
 		}
-	|	TOKEN_READ LPAREN RPAREN
+	|	TOKEN_READ LPAREN TYPE_INT RPAREN
 		{
-			$<exp>$ = createStr(strInput());
+			$<exp>$ = createNumber(intInput());
+		}
+	|	TOKEN_READ LPAREN TYPE_BYTE RPAREN
+		{
+			$<exp>$ = createNumber(byteInput());
+		}
+	|	TOKEN_READ LPAREN TYPE_SHORT RPAREN
+		{
+			$<exp>$ = createNumber(shortInput());
+		}
+	|	TOKEN_READ LPAREN TYPE_LONG RPAREN
+		{
+			$<exp>$ = createNumber(longInput());
+		}
+	|	TOKEN_READ LPAREN TYPE_LONG RPAREN
+		{
+			$<exp>$ = createNumber(longInput());
 		}
 	;
 unary_operator:
@@ -279,7 +304,6 @@ if_statement:
 		{ 
 			if(evaluateIntExpression($<exp>3))
 			{
-				puts("Se cumple el if!");
 				$<exp>$ = $<exp>5;
 			} 
 		}
@@ -288,8 +312,6 @@ if_statement:
 
 loop_statement:
 		WHILE LPAREN expression RPAREN compound_statement { cout << "el while!: " << endl; }
-	|	FOR LPAREN expression_statement expression_statement RPAREN compound_statement { cout << "el for!: " << endl; }
-	|	FOR LPAREN expression_statement expression_statement expression RPAREN compound_statement { cout << "el for!: " << endl; }
 	;
 
 compound_statement:
@@ -323,6 +345,7 @@ type_specifier:
 	|	TYPE_SHORT
 	|	TYPE_LONG
 	|	TYPE_BYTE
+	|	TYPE_STRING
 	;
 
 direct_declarator:
@@ -337,7 +360,6 @@ declaration_list:
 
 identifier_list:
 		TOKEN_ID
-	| 	identifier_list COMMA TOKEN_ID
 	;
 
 init_declarator:
@@ -361,12 +383,24 @@ number:
 		INT { $<exp>$ = $<exp>1;}
 	|	TRUE { $<exp>$ = $<exp>1;}
 	|	FALSE { $<exp>$ = $<exp>1;}
-	|	FLOAT { $<fval>$ = $<fval>1; }
+	|	FLOAT { $<exp>$ = createFloatNumber($<fval>1); }
 	;
 	
 string:
 		STRING { $<exp>$ = $<exp>1; }
 	|	STRING_LITERAL { $<exp>$ = $<exp>1; }
+	|	TO_STRING LPAREN expression RPAREN
+		{
+			$<exp>$ = createStr((char*)to_string($<exp>3).c_str());
+		}
+	|	TOKEN_READ LPAREN RPAREN
+		{
+			$<exp>$ = createStr(strInput());
+		}
+	|	TOKEN_READ LPAREN TYPE_STRING RPAREN
+		{
+			$<exp>$ = createStr(strInput());
+		}
 	;
 
 %%

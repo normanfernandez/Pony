@@ -10,6 +10,7 @@
 #include "PonyInt.h"
 #include "Expression.hpp"
 #include <iostream>
+#include <cstdio>
 #include <sstream>
 #include <string>
 #include <cmath>
@@ -81,22 +82,121 @@ void setInteger(IntegerStruct ** int_struct, intptr_t num){
 	}
 }
 
+std::string to_string(SExpression * exp)
+{
+	if(exp->type == eSTRING){
+		return evaluateExpression(exp);
+	}
+
+	std::stringstream ss;
+
+	if(exp->isfloat == 1){
+		ss << evaluateFloatExpression(exp);
+		return ss.str();
+	}
+	else if(exp->type == eIVARIABLE){
+		return getInteger(exp->variable);
+	}
+	else{
+		ss << evaluateIntExpression(exp);
+		return ss.str();
+	}
+
+}
+
+pony_byte byteInput()
+{
+	pony_short a;
+	std::cin >> a;
+	pony_byte b = (pony_byte)a;
+	return b;
+}
+
+pony_short shortInput()
+{
+	pony_short a;
+	std::cin >> a;
+	return a;
+}
+
+pony_int intInput()
+{
+	pony_int a;
+	std::cin >> a;
+	return a;
+}
+
+pony_long longInput()
+{
+	pony_long a;
+	std::cin >> a;
+	return a;
+}
+
 char * strInput()
 {
-	std::string ss;
-	std::cin >> ss;
-	return (char*)(ss.c_str());
+	char buff[2048];
+	fscanf(stdin, "%s", buff);
+	return (buff);
 }
 
 std::string evaluateExpression(SExpression *exp)
 {
 	if(exp->type == eSTRING)
 		return exp->str;
+	else if(exp->isfloat == 1)
+	{
+		std::stringstream intstr;
+		intstr << evaluateFloatExpression(exp);
+		return std::string(intstr.str());
+	}
 	else
 	{
 		std::stringstream intstr;
 		intstr << evaluateIntExpression(exp);
 		return std::string(intstr.str());
+	}
+}
+
+float evaluateFloatExpression(SExpression *exp)
+{
+	switch(exp->type)
+	{
+		case ePLUS:
+			return evaluateFloatExpression(exp->left) + evaluateFloatExpression(exp->right);
+		case eMULTIPLY:
+			return evaluateFloatExpression(exp->left) * evaluateFloatExpression(exp->right);
+		case eSUBTRACT:
+			return evaluateFloatExpression(exp->left) - evaluateFloatExpression(exp->right);
+		case eDIVIDE:
+			return evaluateFloatExpression(exp->left) / evaluateFloatExpression(exp->right);
+		case eMOD:
+			return fmod(evaluateFloatExpression(exp->left),evaluateFloatExpression(exp->right));
+		case eLOGIC_OR:
+			return evaluateFloatExpression(exp->left) || evaluateFloatExpression(exp->right);
+		case eLOGIC_AND:
+			return evaluateFloatExpression(exp->left) && evaluateFloatExpression(exp->right);
+		case ePOW:
+			return pow(evaluateFloatExpression(exp->left),evaluateFloatExpression(exp->right));
+		case eLTHAN:
+			return evaluateFloatExpression(exp->left) < evaluateFloatExpression(exp->right);
+		case eLETHAN:
+			return evaluateFloatExpression(exp->left) <= evaluateFloatExpression(exp->right);
+		case eGTHAN:
+			return evaluateFloatExpression(exp->left) > evaluateFloatExpression(exp->right);
+		case eGETHAN:
+			return evaluateFloatExpression(exp->left) >= evaluateFloatExpression(exp->right);
+		case eEQUAL:
+			return evaluateFloatExpression(exp->left) == evaluateFloatExpression(exp->right);
+		case eNEQUAL:
+			return evaluateFloatExpression(exp->left) != evaluateFloatExpression(exp->right);
+
+		case eFLOAT:
+			return exp->fvalue;
+		case eVALUE:
+			return (float)exp->value;
+		default:
+			return -1; //Error happens!
 	}
 }
 

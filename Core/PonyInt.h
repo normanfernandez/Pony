@@ -10,7 +10,7 @@
 #define PONY_LONG_MAX __INT64_MAX__
 
 //Byte size constants
-enum {
+enum PonyInt{
 	eCHAR = -1,
 	eBYTE = 1,
 	eSHORT = 2,

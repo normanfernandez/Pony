@@ -5,6 +5,7 @@
 #ifndef __EXPRESSION_H__
 #define __EXPRESSION_H__
 #include <string>
+#include "PonyInt.h"
 
 /**
  * @brief The operation type
@@ -33,15 +34,20 @@ typedef enum tagEOperationType
     eLEFTE,
     eRIGHTE,
     eSTRING,
+	eFLOAT,
 	eCONCAT,
+	eIVARIABLE,
     eMOD
 } EOperationType;
 
 typedef struct tagSExpression
 {
     EOperationType type;///< type of operation
+    int isfloat;
     int value;///< valid only when type is eVALUE
+    float fvalue;///< valid only when type is eFLAOT
     std::string str;
+    struct _IntStruct * variable;
     struct tagSExpression *left; ///< left side of the tree
     struct tagSExpression *right;///< right side of the tree
 } SExpression;
@@ -52,9 +58,11 @@ typedef struct tagSExpression
  * @return The expression or NULL in case of no memory
  */
 SExpression *createNumber(int value);
+SExpression *createFloatNumber(float value);
 SExpression *createStr(char * str);
 SExpression *allocateExpression();
 SExpression *allocateExpression(int num);
+SExpression *allocateFloatExpression(float num);
 SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right);
 void deleteExpression(SExpression **b);
 
