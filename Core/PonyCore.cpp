@@ -219,7 +219,7 @@ pony_long longInput()
 
 char * strInput()
 {
-	char buff[2048];
+	char *  buff = new char[1024];
 	fscanf(stdin, "%s", buff);
 	return (buff);
 }
@@ -279,6 +279,7 @@ float evaluateFloatExpression(SExpression *exp)
 			return exp->fvalue;
 		case eVALUE:
 			return (float)exp->value;
+
 		default:
 			return -1; //Error happens!
 	}

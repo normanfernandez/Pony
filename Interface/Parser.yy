@@ -153,6 +153,7 @@ concat_expression:
 	|	string CONCAT string { $<exp>$ = createOperation(eCONCAT, $<exp>1, $<exp>3); }
 	|	string CONCAT expression { $<exp>$ = createOperation(eCONCAT, $<exp>1, $<exp>3);}
 	|	expression CONCAT string { $<exp>$ = createOperation(eCONCAT, $<exp>1, $<exp>3);}
+	|	concat_expression CONCAT concat_expression { $<exp>$ = createOperation(eCONCAT, $<exp>1, $<exp>3);}
 	;
 
 assignment_expression:
@@ -263,6 +264,12 @@ unary_expression:
 	|	PRINTLN LPAREN expression RPAREN
 		{
 			cout << evaluateExpression($<exp>3) << endl;
+			fflush(stdout);
+			$<exp>$ = createNumber(0);
+		}
+	|	PRINTLN concat_expression
+		{
+			cout << evaluateExpression($<exp>2) << endl;
 			fflush(stdout);
 			$<exp>$ = createNumber(0);
 		}

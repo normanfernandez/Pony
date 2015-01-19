@@ -45,7 +45,7 @@ typedef struct tagSExpression
     EOperationType type;///< type of operation
     int isfloat;
     int value;///< valid only when type is eVALUE
-    float fvalue;///< valid only when type is eFLAOT
+    float fvalue;///< valid only when type is eFLOAT
     std::string str;
     struct _IntStruct * variable;
     struct tagSExpression *left; ///< left side of the tree

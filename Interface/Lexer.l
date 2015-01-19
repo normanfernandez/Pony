@@ -18,23 +18,24 @@ int line_number = 1;
 "-"					{ return SUB; }
 "*"					{ return MUL; }
 "/"					{ return DIV; }
-"=>"					{ puts("ter!");return TERNARY; }
+("=>")|("?")		{ return TERNARY; }
+":"					{ return COLON; }
+("is")|("==")		{ return EQ_OP; }
 ("%")|("mod")		{ return MOD; }
 ("**")|("pow")		{ return POW; }
 
 ("or")|("||")		{ return OR_OP; }
 ("and")|("&&")		{ return AND_OP; }
 
-("^")|("xor")			{ return XOR; }
+("^")|("xor")		{ return XOR; }
+
 "<"					{ return LTHAN; }
-"<="					{ return LEQU; }
-"<<"					{ return L_OP; }
-"<<="					{ return L_EQU; }
+"<="				{ return LEQU; }
+"<<"				{ return L_OP; }
 
 ">"					{ return GTHAN; }
-">="					{ return GEQU; }
-">>"					{ return R_OP; }
-">>="					{ return R_EQU; }
+">="				{ return GEQU; }
+">>"				{ return R_OP; }
 
 
 [ \t]        			{ ; }
@@ -55,33 +56,12 @@ int line_number = 1;
 							return STRING;
 						}
 
-':':					{ return COLON; }
-"..."					{ return ELLIPSIS; }
+
 \(						{ return LPAREN; }
 \)						{ return RPAREN; }
 \n           			{++line_number; }
 ;						{ return SEMICOLON; }
 "."            			{ return CONCAT; }
-',':					{ return COMMA; }
-
-
-"++":\					{ return INC; }
-"--":\					{ return DEC; }
-
-"=":					{ return EQUAL; }
-("==")|("is")			{ return EQ_OP; }
-("!=")|("not")			{ return NE_OP; }
-"*=":\					{ return MUL_EQU; }
-"+=":\					{ return ADD_EQU; }
-"-=":\					{ return SUB_EQU; }
-"/=":\					{ return DIV_EQU; }
-"^=":\					{ return XOR_EQU; }
-\%\=:\					{ return MOD_EQU; }
-"&=":\					{ return AND_EQU; }
-"|=":\					{ return OR_EQU; }
-
-"if"					{ return IF; }
-"else"					{ return ELSE; }
 
 "true"					{  
 							yylval.exp = createNumber(1); 
@@ -94,10 +74,6 @@ int line_number = 1;
 
 ("println")|("writeln")	{ return PRINTLN; }
 ("print")|("write")		{ return PRINTNL; }
-"continue"				{ return CONTINUE; }
-"break"					{ return BREAK; }
-"return"				{ return RETURN; }
-"begin"					{ return TOKEN_BEGIN; }
 "byte"					{ yylval.ival = eBYTE; return TYPE_BYTE; }
 "short"					{ yylval.ival = eSHORT; return TYPE_SHORT; }
 "int"					{ yylval.ival = eINT; return TYPE_INT; }
@@ -107,11 +83,7 @@ int line_number = 1;
 "to_string"				{ return TO_STRING; }
 ("system")|("console")	{ return SYSCALL; }
 "to_int"				{ return TO_INT; }
-"end"        			{ return TOKEN_END; }
 ("read")|("input")		{ return TOKEN_READ; }
-"while"					{ return WHILE; }
-"for"					{ return FOR;}
-"var"        			{ return VAR; }
 
 "sqrt"					{ return SQRT; }
 "cbrt"					{ return CBRT; }

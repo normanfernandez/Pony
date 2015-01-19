@@ -1,0 +1,4979 @@
+Nonterminals useless in grammar
+
+   constant_expression
+   unary_operator
+   identifier_list
+   initializer_list
+
+
+Terminals unused in grammar
+
+   FOR
+   ENDL
+   RETURN
+   PONY
+   TYPE_FLOAT
+   MOD_EQU
+   XOR_EQU
+   SYSTEM
+   COMMA
+   ELLIPSIS
+   WS
+   '~'
+   '!'
+
+
+Rules useless in grammar
+
+  120 constant_expression: conditional_expression
+
+  121 unary_operator: AND
+  122               | ADD
+  123               | SUB
+  124               | '~'
+  125               | '!'
+
+  126 identifier_list: TOKEN_ID
+
+  127 initializer_list: initializer
+
+
+Rules useless in parser due to conflicts
+
+   16 concat_expression: string
+   17                  | string CONCAT string
+
+   78 unary_expression: TOKEN_READ LPAREN TYPE_LONG RPAREN
+
+  105 declaration_list: declaration
+  106                 | declaration_list declaration
+
+
+State 35 conflicts: 1 shift/reduce
+State 38 conflicts: 2 shift/reduce
+State 39 conflicts: 1 shift/reduce
+State 40 conflicts: 1 shift/reduce
+State 41 conflicts: 1 shift/reduce
+State 42 conflicts: 1 shift/reduce
+State 43 conflicts: 2 shift/reduce
+State 44 conflicts: 4 shift/reduce
+State 45 conflicts: 2 shift/reduce
+State 46 conflicts: 19 shift/reduce
+State 47 conflicts: 4 shift/reduce
+State 48 conflicts: 10 shift/reduce
+State 49 conflicts: 2 shift/reduce
+State 57 conflicts: 1 shift/reduce, 50 reduce/reduce
+State 61 conflicts: 1 shift/reduce, 1 reduce/reduce
+State 99 conflicts: 4 shift/reduce
+State 145 conflicts: 1 shift/reduce, 1 reduce/reduce
+State 147 conflicts: 1 shift/reduce
+State 148 conflicts: 1 shift/reduce
+State 151 conflicts: 2 shift/reduce
+State 152 conflicts: 4 shift/reduce
+State 153 conflicts: 4 shift/reduce
+State 154 conflicts: 2 shift/reduce
+State 155 conflicts: 2 shift/reduce
+State 156 conflicts: 2 shift/reduce
+State 157 conflicts: 2 shift/reduce
+State 158 conflicts: 17 shift/reduce
+State 159 conflicts: 17 shift/reduce
+State 179 conflicts: 1 shift/reduce
+State 180 conflicts: 1 shift/reduce, 50 reduce/reduce
+State 182 conflicts: 46 reduce/reduce
+State 189 conflicts: 50 reduce/reduce
+State 205 conflicts: 1 shift/reduce
+State 207 conflicts: 1 shift/reduce
+State 210 conflicts: 29 reduce/reduce
+State 216 conflicts: 29 reduce/reduce
+
+
+Grammar
+
+    0 $accept: pony $end
+
+    1 pony: statement_list
+
+    2 statement: expression_statement
+    3          | if_statement
+    4          | declaration
+    5          | loop_statement
+    6          | jump_statement
+
+    7 statement_list: statement
+    8               | statement_list statement
+
+    9 expression_statement: SEMICOLON
+   10                     | expression SEMICOLON
+
+   11 primary_expression: string
+   12                   | number
+   13                   | LPAREN expression RPAREN
+
+   14 expression: assignment_expression
+   15           | concat_expression
+
+   16 concat_expression: string
+   17                  | string CONCAT string
+   18                  | string CONCAT expression
+   19                  | expression CONCAT string
+   20                  | concat_expression CONCAT concat_expression
+
+   21 assignment_expression: conditional_expression
+   22                      | unary_expression EQ_OP assignment_expression
+   23                      | unary_expression NE_OP assignment_expression
+   24                      | unary_expression MUL_EQU assignment_expression
+   25                      | unary_expression ADD_EQU assignment_expression
+   26                      | unary_expression SUB_EQU assignment_expression
+   27                      | unary_expression DIV_EQU assignment_expression
+   28                      | unary_expression AND_EQU assignment_expression
+   29                      | unary_expression OR_EQU assignment_expression
+   30                      | unary_expression L_EQU assignment_expression
+   31                      | unary_expression R_EQU assignment_expression
+
+   32 conditional_expression: logical_or_expression
+   33                       | logical_or_expression TERNARY expression COLON expression
+
+   34 logical_or_expression: logical_and_expression
+   35                      | logical_or_expression OR_OP logical_and_expression
+
+   36 logical_and_expression: inclusive_or_expression
+   37                       | logical_and_expression AND_OP inclusive_or_expression
+
+   38 inclusive_or_expression: exclusive_or_expression
+   39                        | inclusive_or_expression OR exclusive_or_expression
+
+   40 exclusive_or_expression: and_expression
+   41                        | exclusive_or_expression XOR and_expression
+
+   42 and_expression: equality_expression
+   43               | and_expression AND equality_expression
+
+   44 equality_expression: relational_expression
+   45                    | equality_expression EQ_OP relational_expression
+   46                    | equality_expression NE_OP relational_expression
+
+   47 relational_expression: shift_expression
+   48                      | relational_expression LTHAN shift_expression
+   49                      | relational_expression GTHAN shift_expression
+   50                      | relational_expression LEQU shift_expression
+   51                      | relational_expression GEQU shift_expression
+
+   52 shift_expression: additive_expression
+   53                 | shift_expression L_OP additive_expression
+   54                 | shift_expression R_OP additive_expression
+
+   55 additive_expression: multiplicative_expression
+   56                    | additive_expression ADD multiplicative_expression
+   57                    | additive_expression SUB multiplicative_expression
+   58                    | additive_expression multiplicative_expression
+
+   59 multiplicative_expression: unary_expression
+   60                          | multiplicative_expression MUL unary_expression
+   61                          | multiplicative_expression DIV unary_expression
+   62                          | multiplicative_expression MOD unary_expression
+   63                          | multiplicative_expression POW unary_expression
+
+   64 unary_expression: postfix_expression
+   65                 | INC unary_expression
+   66                 | DEC unary_expression
+   67                 | TO_INT LPAREN expression RPAREN
+   68                 | SQRT LPAREN expression RPAREN
+   69                 | CBRT LPAREN expression RPAREN
+   70                 | PRINTLN LPAREN expression RPAREN
+   71                 | PRINTLN concat_expression
+   72                 | PRINTNL LPAREN expression RPAREN
+   73                 | SYSCALL LPAREN expression RPAREN
+   74                 | TOKEN_READ LPAREN TYPE_INT RPAREN
+   75                 | TOKEN_READ LPAREN TYPE_BYTE RPAREN
+   76                 | TOKEN_READ LPAREN TYPE_SHORT RPAREN
+   77                 | TOKEN_READ LPAREN TYPE_LONG RPAREN
+   78                 | TOKEN_READ LPAREN TYPE_LONG RPAREN
+
+   79 postfix_expression: primary_expression
+   80                   | postfix_expression INC
+   81                   | postfix_expression DEC
+
+   82 if_statement: IF LPAREN expression RPAREN compound_statement
+   83             | IF LPAREN expression RPAREN compound_statement ELSE compound_statement
+
+   84 loop_statement: WHILE LPAREN expression RPAREN compound_statement
+
+   85 compound_statement: statement
+   86                   | TOKEN_BEGIN TOKEN_END
+   87                   | TOKEN_BEGIN statement_list TOKEN_END
+   88                   | TOKEN_BEGIN declaration_list TOKEN_END
+   89                   | TOKEN_BEGIN declaration_list statement_list TOKEN_END
+
+   90 jump_statement: CONTINUE SEMICOLON
+   91               | BREAK SEMICOLON
+
+   92 declaration: declaration_specifiers SEMICOLON
+   93            | declaration_specifiers init_declarator_list SEMICOLON
+
+   94 declaration_specifiers: type_specifier
+   95                       | type_specifier declaration_specifiers
+   96                       | VAR LTHAN declaration_specifiers GTHAN TOKEN_ID
+   97                       | VAR TOKEN_ID EQUAL expression
+
+   98 type_specifier: TYPE_INT
+   99               | TYPE_SHORT
+  100               | TYPE_LONG
+  101               | TYPE_BYTE
+  102               | TYPE_STRING
+
+  103 direct_declarator: TOKEN_ID
+  104                  | LPAREN direct_declarator RPAREN
+
+  105 declaration_list: declaration
+  106                 | declaration_list declaration
+
+  107 init_declarator: direct_declarator
+  108                | direct_declarator EQ_OP initializer
+
+  109 initializer: assignment_expression
+
+  110 init_declarator_list: init_declarator
+
+  111 number: INT
+  112       | TRUE
+  113       | FALSE
+  114       | FLOAT
+
+  115 string: STRING
+  116       | STRING_LITERAL
+  117       | TO_STRING LPAREN expression RPAREN
+  118       | TOKEN_READ LPAREN RPAREN
+  119       | TOKEN_READ LPAREN TYPE_STRING RPAREN
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33)
+'~' (126)
+error (256)
+TOKEN_BEGIN (258) 86 87 88 89
+TOKEN_END (259) 86 87 88 89
+SYSCALL (260) 73
+PRINTLN (261) 70 71
+PRINTNL (262) 72
+WHILE (263) 84
+BREAK (264) 91
+FOR (265)
+CONTINUE (266) 90
+ENDL (267)
+IF (268) 82 83
+ELSE (269) 83
+RETURN (270)
+TOKEN_READ (271) 74 75 76 77 78 118 119
+PONY (272)
+VAR (273) 96 97
+SQRT (274) 68
+CBRT (275) 69
+TYPE_BYTE (276) 75 101
+COLON (277) 33
+TYPE_SHORT (278) 76 99
+TERNARY (279) 33
+TYPE_INT (280) 74 98
+TYPE_LONG (281) 77 78 100
+TYPE_FLOAT (282)
+OR_OP (283) 35
+EQUAL (284) 97
+ADD_EQU (285) 25
+MUL_EQU (286) 24
+SUB_EQU (287) 26
+DIV_EQU (288) 27
+R_EQU (289) 31
+L_EQU (290) 30
+MOD_EQU (291)
+OR_EQU (292) 29
+XOR_EQU (293)
+AND_EQU (294) 28
+R_OP (295) 54
+L_OP (296) 53
+TYPE_STRING (297) 102 119
+AND_OP (298) 37
+GEQU (299) 51
+LEQU (300) 50
+DEC (301) 66 81
+INC (302) 65 80
+LTHAN (303) 48 96
+TRUE (304) 112
+FALSE (305) 113
+GTHAN (306) 49 96
+EQ_OP (307) 22 45 108
+TO_STRING (308) 117
+TO_INT (309) 67
+SYSTEM (310)
+NE_OP (311) 23 46
+LPAREN (312) 13 67 68 69 70 72 73 74 75 76 77 78 82 83 84 104 117 118
+    119
+RPAREN (313) 13 67 68 69 70 72 73 74 75 76 77 78 82 83 84 104 117 118
+    119
+COMMA (314)
+CONCAT (315) 17 18 19 20
+SEMICOLON (316) 9 10 90 91 92 93
+ELLIPSIS (317)
+WS (318)
+SUB (319) 57
+ADD (320) 56
+POW (321) 63
+AND (322) 43
+XOR (323) 41
+OR (324) 39
+MOD (325) 62
+DIV (326) 61
+MUL (327) 60
+INT (328) 111
+FLOAT (329) 114
+STRING (330) 115
+STRING_LITERAL (331) 116
+TOKEN_ID (332) 96 97 103
+
+
+Nonterminals, with rules where they appear
+
+$accept (80)
+    on left: 0
+pony (81)
+    on left: 1, on right: 0
+statement (82)
+    on left: 2 3 4 5 6, on right: 7 8 85
+statement_list (83)
+    on left: 7 8, on right: 1 8 87 89
+expression_statement (84)
+    on left: 9 10, on right: 2
+primary_expression (85)
+    on left: 11 12 13, on right: 79
+expression (86)
+    on left: 14 15, on right: 10 13 18 19 33 67 68 69 70 72 73 82 83
+    84 97 117
+concat_expression (87)
+    on left: 16 17 18 19 20, on right: 15 20 71
+assignment_expression (88)
+    on left: 21 22 23 24 25 26 27 28 29 30 31, on right: 14 22 23 24
+    25 26 27 28 29 30 31 109
+conditional_expression (89)
+    on left: 32 33, on right: 21
+logical_or_expression (90)
+    on left: 34 35, on right: 32 33 35
+logical_and_expression (91)
+    on left: 36 37, on right: 34 35 37
+inclusive_or_expression (92)
+    on left: 38 39, on right: 36 37 39
+exclusive_or_expression (93)
+    on left: 40 41, on right: 38 39 41
+and_expression (94)
+    on left: 42 43, on right: 40 41 43
+equality_expression (95)
+    on left: 44 45 46, on right: 42 43 45 46
+relational_expression (96)
+    on left: 47 48 49 50 51, on right: 44 45 46 48 49 50 51
+shift_expression (97)
+    on left: 52 53 54, on right: 47 48 49 50 51 53 54
+additive_expression (98)
+    on left: 55 56 57 58, on right: 52 53 54 56 57 58
+multiplicative_expression (99)
+    on left: 59 60 61 62 63, on right: 55 56 57 58 60 61 62 63
+unary_expression (100)
+    on left: 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78, on right:
+    22 23 24 25 26 27 28 29 30 31 59 60 61 62 63 65 66
+postfix_expression (101)
+    on left: 79 80 81, on right: 64 80 81
+if_statement (102)
+    on left: 82 83, on right: 3
+loop_statement (103)
+    on left: 84, on right: 5
+compound_statement (104)
+    on left: 85 86 87 88 89, on right: 82 83 84
+jump_statement (105)
+    on left: 90 91, on right: 6
+declaration (106)
+    on left: 92 93, on right: 4 105 106
+declaration_specifiers (107)
+    on left: 94 95 96 97, on right: 92 93 95 96
+type_specifier (108)
+    on left: 98 99 100 101 102, on right: 94 95
+direct_declarator (109)
+    on left: 103 104, on right: 104 107 108
+declaration_list (110)
+    on left: 105 106, on right: 88 89 106
+init_declarator (111)
+    on left: 107 108, on right: 110
+initializer (112)
+    on left: 109, on right: 108
+init_declarator_list (113)
+    on left: 110, on right: 93
+number (114)
+    on left: 111 112 113 114, on right: 12
+string (115)
+    on left: 115 116 117 118 119, on right: 11 16 17 18 19
+
+
+state 0
+
+    0 $accept: . pony $end
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    pony                       go to state 29
+    statement                  go to state 30
+    statement_list             go to state 31
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    jump_statement             go to state 52
+    declaration                go to state 53
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 1
+
+   73 unary_expression: SYSCALL . LPAREN expression RPAREN
+
+    LPAREN  shift, and go to state 58
+
+
+state 2
+
+   70 unary_expression: PRINTLN . LPAREN expression RPAREN
+   71                 | PRINTLN . concat_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 59
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 60
+    concat_expression          go to state 61
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 3
+
+   72 unary_expression: PRINTNL . LPAREN expression RPAREN
+
+    LPAREN  shift, and go to state 62
+
+
+state 4
+
+   84 loop_statement: WHILE . LPAREN expression RPAREN compound_statement
+
+    LPAREN  shift, and go to state 63
+
+
+state 5
+
+   91 jump_statement: BREAK . SEMICOLON
+
+    SEMICOLON  shift, and go to state 64
+
+
+state 6
+
+   90 jump_statement: CONTINUE . SEMICOLON
+
+    SEMICOLON  shift, and go to state 65
+
+
+state 7
+
+   82 if_statement: IF . LPAREN expression RPAREN compound_statement
+   83             | IF . LPAREN expression RPAREN compound_statement ELSE compound_statement
+
+    LPAREN  shift, and go to state 66
+
+
+state 8
+
+   74 unary_expression: TOKEN_READ . LPAREN TYPE_INT RPAREN
+   75                 | TOKEN_READ . LPAREN TYPE_BYTE RPAREN
+   76                 | TOKEN_READ . LPAREN TYPE_SHORT RPAREN
+   77                 | TOKEN_READ . LPAREN TYPE_LONG RPAREN
+   78                 | TOKEN_READ . LPAREN TYPE_LONG RPAREN
+  118 string: TOKEN_READ . LPAREN RPAREN
+  119       | TOKEN_READ . LPAREN TYPE_STRING RPAREN
+
+    LPAREN  shift, and go to state 67
+
+
+state 9
+
+   96 declaration_specifiers: VAR . LTHAN declaration_specifiers GTHAN TOKEN_ID
+   97                       | VAR . TOKEN_ID EQUAL expression
+
+    LTHAN     shift, and go to state 68
+    TOKEN_ID  shift, and go to state 69
+
+
+state 10
+
+   68 unary_expression: SQRT . LPAREN expression RPAREN
+
+    LPAREN  shift, and go to state 70
+
+
+state 11
+
+   69 unary_expression: CBRT . LPAREN expression RPAREN
+
+    LPAREN  shift, and go to state 71
+
+
+state 12
+
+  101 type_specifier: TYPE_BYTE .
+
+    $default  reduce using rule 101 (type_specifier)
+
+
+state 13
+
+   99 type_specifier: TYPE_SHORT .
+
+    $default  reduce using rule 99 (type_specifier)
+
+
+state 14
+
+   98 type_specifier: TYPE_INT .
+
+    $default  reduce using rule 98 (type_specifier)
+
+
+state 15
+
+  100 type_specifier: TYPE_LONG .
+
+    $default  reduce using rule 100 (type_specifier)
+
+
+state 16
+
+  102 type_specifier: TYPE_STRING .
+
+    $default  reduce using rule 102 (type_specifier)
+
+
+state 17
+
+   66 unary_expression: DEC . unary_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression  go to state 33
+    unary_expression    go to state 72
+    postfix_expression  go to state 49
+    number              go to state 56
+    string              go to state 73
+
+
+state 18
+
+   65 unary_expression: INC . unary_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression  go to state 33
+    unary_expression    go to state 74
+    postfix_expression  go to state 49
+    number              go to state 56
+    string              go to state 73
+
+
+state 19
+
+  112 number: TRUE .
+
+    $default  reduce using rule 112 (number)
+
+
+state 20
+
+  113 number: FALSE .
+
+    $default  reduce using rule 113 (number)
+
+
+state 21
+
+  117 string: TO_STRING . LPAREN expression RPAREN
+
+    LPAREN  shift, and go to state 75
+
+
+state 22
+
+   67 unary_expression: TO_INT . LPAREN expression RPAREN
+
+    LPAREN  shift, and go to state 76
+
+
+state 23
+
+   13 primary_expression: LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 77
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 24
+
+    9 expression_statement: SEMICOLON .
+
+    $default  reduce using rule 9 (expression_statement)
+
+
+state 25
+
+  111 number: INT .
+
+    $default  reduce using rule 111 (number)
+
+
+state 26
+
+  114 number: FLOAT .
+
+    $default  reduce using rule 114 (number)
+
+
+state 27
+
+  115 string: STRING .
+
+    $default  reduce using rule 115 (string)
+
+
+state 28
+
+  116 string: STRING_LITERAL .
+
+    $default  reduce using rule 116 (string)
+
+
+state 29
+
+    0 $accept: pony . $end
+
+    $end  shift, and go to state 78
+
+
+state 30
+
+    7 statement_list: statement .
+
+    $default  reduce using rule 7 (statement_list)
+
+
+state 31
+
+    1 pony: statement_list .
+    8 statement_list: statement_list . statement
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    $default  reduce using rule 1 (pony)
+
+    statement                  go to state 79
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    jump_statement             go to state 52
+    declaration                go to state 53
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 32
+
+    2 statement: expression_statement .
+
+    $default  reduce using rule 2 (statement)
+
+
+state 33
+
+   79 postfix_expression: primary_expression .
+
+    $default  reduce using rule 79 (postfix_expression)
+
+
+state 34
+
+   10 expression_statement: expression . SEMICOLON
+   19 concat_expression: expression . CONCAT string
+
+    CONCAT     shift, and go to state 80
+    SEMICOLON  shift, and go to state 81
+
+
+state 35
+
+   15 expression: concat_expression .
+   20 concat_expression: concat_expression . CONCAT concat_expression
+
+    CONCAT  shift, and go to state 82
+
+    CONCAT    [reduce using rule 15 (expression)]
+    $default  reduce using rule 15 (expression)
+
+
+state 36
+
+   14 expression: assignment_expression .
+
+    $default  reduce using rule 14 (expression)
+
+
+state 37
+
+   21 assignment_expression: conditional_expression .
+
+    $default  reduce using rule 21 (assignment_expression)
+
+
+state 38
+
+   32 conditional_expression: logical_or_expression .
+   33                       | logical_or_expression . TERNARY expression COLON expression
+   35 logical_or_expression: logical_or_expression . OR_OP logical_and_expression
+
+    TERNARY  shift, and go to state 83
+    OR_OP    shift, and go to state 84
+
+    TERNARY   [reduce using rule 32 (conditional_expression)]
+    OR_OP     [reduce using rule 32 (conditional_expression)]
+    $default  reduce using rule 32 (conditional_expression)
+
+
+state 39
+
+   34 logical_or_expression: logical_and_expression .
+   37 logical_and_expression: logical_and_expression . AND_OP inclusive_or_expression
+
+    AND_OP  shift, and go to state 85
+
+    AND_OP    [reduce using rule 34 (logical_or_expression)]
+    $default  reduce using rule 34 (logical_or_expression)
+
+
+state 40
+
+   36 logical_and_expression: inclusive_or_expression .
+   39 inclusive_or_expression: inclusive_or_expression . OR exclusive_or_expression
+
+    OR  shift, and go to state 86
+
+    OR        [reduce using rule 36 (logical_and_expression)]
+    $default  reduce using rule 36 (logical_and_expression)
+
+
+state 41
+
+   38 inclusive_or_expression: exclusive_or_expression .
+   41 exclusive_or_expression: exclusive_or_expression . XOR and_expression
+
+    XOR  shift, and go to state 87
+
+    XOR       [reduce using rule 38 (inclusive_or_expression)]
+    $default  reduce using rule 38 (inclusive_or_expression)
+
+
+state 42
+
+   40 exclusive_or_expression: and_expression .
+   43 and_expression: and_expression . AND equality_expression
+
+    AND  shift, and go to state 88
+
+    AND       [reduce using rule 40 (exclusive_or_expression)]
+    $default  reduce using rule 40 (exclusive_or_expression)
+
+
+state 43
+
+   42 and_expression: equality_expression .
+   45 equality_expression: equality_expression . EQ_OP relational_expression
+   46                    | equality_expression . NE_OP relational_expression
+
+    EQ_OP  shift, and go to state 89
+    NE_OP  shift, and go to state 90
+
+    EQ_OP     [reduce using rule 42 (and_expression)]
+    NE_OP     [reduce using rule 42 (and_expression)]
+    $default  reduce using rule 42 (and_expression)
+
+
+state 44
+
+   44 equality_expression: relational_expression .
+   48 relational_expression: relational_expression . LTHAN shift_expression
+   49                      | relational_expression . GTHAN shift_expression
+   50                      | relational_expression . LEQU shift_expression
+   51                      | relational_expression . GEQU shift_expression
+
+    GEQU   shift, and go to state 91
+    LEQU   shift, and go to state 92
+    LTHAN  shift, and go to state 93
+    GTHAN  shift, and go to state 94
+
+    GEQU      [reduce using rule 44 (equality_expression)]
+    LEQU      [reduce using rule 44 (equality_expression)]
+    LTHAN     [reduce using rule 44 (equality_expression)]
+    GTHAN     [reduce using rule 44 (equality_expression)]
+    $default  reduce using rule 44 (equality_expression)
+
+
+state 45
+
+   47 relational_expression: shift_expression .
+   53 shift_expression: shift_expression . L_OP additive_expression
+   54                 | shift_expression . R_OP additive_expression
+
+    R_OP  shift, and go to state 95
+    L_OP  shift, and go to state 96
+
+    R_OP      [reduce using rule 47 (relational_expression)]
+    L_OP      [reduce using rule 47 (relational_expression)]
+    $default  reduce using rule 47 (relational_expression)
+
+
+state 46
+
+   52 shift_expression: additive_expression .
+   56 additive_expression: additive_expression . ADD multiplicative_expression
+   57                    | additive_expression . SUB multiplicative_expression
+   58                    | additive_expression . multiplicative_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SUB             shift, and go to state 97
+    ADD             shift, and go to state 98
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    SYSCALL         [reduce using rule 52 (shift_expression)]
+    PRINTLN         [reduce using rule 52 (shift_expression)]
+    PRINTNL         [reduce using rule 52 (shift_expression)]
+    TOKEN_READ      [reduce using rule 52 (shift_expression)]
+    SQRT            [reduce using rule 52 (shift_expression)]
+    CBRT            [reduce using rule 52 (shift_expression)]
+    DEC             [reduce using rule 52 (shift_expression)]
+    INC             [reduce using rule 52 (shift_expression)]
+    TRUE            [reduce using rule 52 (shift_expression)]
+    FALSE           [reduce using rule 52 (shift_expression)]
+    TO_STRING       [reduce using rule 52 (shift_expression)]
+    TO_INT          [reduce using rule 52 (shift_expression)]
+    LPAREN          [reduce using rule 52 (shift_expression)]
+    SUB             [reduce using rule 52 (shift_expression)]
+    ADD             [reduce using rule 52 (shift_expression)]
+    INT             [reduce using rule 52 (shift_expression)]
+    FLOAT           [reduce using rule 52 (shift_expression)]
+    STRING          [reduce using rule 52 (shift_expression)]
+    STRING_LITERAL  [reduce using rule 52 (shift_expression)]
+    $default        reduce using rule 52 (shift_expression)
+
+    primary_expression         go to state 33
+    multiplicative_expression  go to state 99
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 47
+
+   55 additive_expression: multiplicative_expression .
+   60 multiplicative_expression: multiplicative_expression . MUL unary_expression
+   61                          | multiplicative_expression . DIV unary_expression
+   62                          | multiplicative_expression . MOD unary_expression
+   63                          | multiplicative_expression . POW unary_expression
+
+    POW  shift, and go to state 101
+    MOD  shift, and go to state 102
+    DIV  shift, and go to state 103
+    MUL  shift, and go to state 104
+
+    POW       [reduce using rule 55 (additive_expression)]
+    MOD       [reduce using rule 55 (additive_expression)]
+    DIV       [reduce using rule 55 (additive_expression)]
+    MUL       [reduce using rule 55 (additive_expression)]
+    $default  reduce using rule 55 (additive_expression)
+
+
+state 48
+
+   22 assignment_expression: unary_expression . EQ_OP assignment_expression
+   23                      | unary_expression . NE_OP assignment_expression
+   24                      | unary_expression . MUL_EQU assignment_expression
+   25                      | unary_expression . ADD_EQU assignment_expression
+   26                      | unary_expression . SUB_EQU assignment_expression
+   27                      | unary_expression . DIV_EQU assignment_expression
+   28                      | unary_expression . AND_EQU assignment_expression
+   29                      | unary_expression . OR_EQU assignment_expression
+   30                      | unary_expression . L_EQU assignment_expression
+   31                      | unary_expression . R_EQU assignment_expression
+   59 multiplicative_expression: unary_expression .
+
+    ADD_EQU  shift, and go to state 105
+    MUL_EQU  shift, and go to state 106
+    SUB_EQU  shift, and go to state 107
+    DIV_EQU  shift, and go to state 108
+    R_EQU    shift, and go to state 109
+    L_EQU    shift, and go to state 110
+    OR_EQU   shift, and go to state 111
+    AND_EQU  shift, and go to state 112
+    EQ_OP    shift, and go to state 113
+    NE_OP    shift, and go to state 114
+
+    ADD_EQU   [reduce using rule 59 (multiplicative_expression)]
+    MUL_EQU   [reduce using rule 59 (multiplicative_expression)]
+    SUB_EQU   [reduce using rule 59 (multiplicative_expression)]
+    DIV_EQU   [reduce using rule 59 (multiplicative_expression)]
+    R_EQU     [reduce using rule 59 (multiplicative_expression)]
+    L_EQU     [reduce using rule 59 (multiplicative_expression)]
+    OR_EQU    [reduce using rule 59 (multiplicative_expression)]
+    AND_EQU   [reduce using rule 59 (multiplicative_expression)]
+    EQ_OP     [reduce using rule 59 (multiplicative_expression)]
+    NE_OP     [reduce using rule 59 (multiplicative_expression)]
+    $default  reduce using rule 59 (multiplicative_expression)
+
+
+state 49
+
+   64 unary_expression: postfix_expression .
+   80 postfix_expression: postfix_expression . INC
+   81                   | postfix_expression . DEC
+
+    DEC  shift, and go to state 115
+    INC  shift, and go to state 116
+
+    DEC       [reduce using rule 64 (unary_expression)]
+    INC       [reduce using rule 64 (unary_expression)]
+    $default  reduce using rule 64 (unary_expression)
+
+
+state 50
+
+    3 statement: if_statement .
+
+    $default  reduce using rule 3 (statement)
+
+
+state 51
+
+    5 statement: loop_statement .
+
+    $default  reduce using rule 5 (statement)
+
+
+state 52
+
+    6 statement: jump_statement .
+
+    $default  reduce using rule 6 (statement)
+
+
+state 53
+
+    4 statement: declaration .
+
+    $default  reduce using rule 4 (statement)
+
+
+state 54
+
+   92 declaration: declaration_specifiers . SEMICOLON
+   93            | declaration_specifiers . init_declarator_list SEMICOLON
+
+    LPAREN     shift, and go to state 117
+    SEMICOLON  shift, and go to state 118
+    TOKEN_ID   shift, and go to state 119
+
+    direct_declarator     go to state 120
+    init_declarator       go to state 121
+    init_declarator_list  go to state 122
+
+
+state 55
+
+   94 declaration_specifiers: type_specifier .
+   95                       | type_specifier . declaration_specifiers
+
+    VAR          shift, and go to state 9
+    TYPE_BYTE    shift, and go to state 12
+    TYPE_SHORT   shift, and go to state 13
+    TYPE_INT     shift, and go to state 14
+    TYPE_LONG    shift, and go to state 15
+    TYPE_STRING  shift, and go to state 16
+
+    $default  reduce using rule 94 (declaration_specifiers)
+
+    declaration_specifiers  go to state 123
+    type_specifier          go to state 55
+
+
+state 56
+
+   12 primary_expression: number .
+
+    $default  reduce using rule 12 (primary_expression)
+
+
+state 57
+
+   11 primary_expression: string .
+   16 concat_expression: string .
+   17                  | string . CONCAT string
+   18                  | string . CONCAT expression
+
+    CONCAT  shift, and go to state 124
+
+    SYSCALL         reduce using rule 11 (primary_expression)
+    SYSCALL         [reduce using rule 16 (concat_expression)]
+    PRINTLN         reduce using rule 11 (primary_expression)
+    PRINTLN         [reduce using rule 16 (concat_expression)]
+    PRINTNL         reduce using rule 11 (primary_expression)
+    PRINTNL         [reduce using rule 16 (concat_expression)]
+    TOKEN_READ      reduce using rule 11 (primary_expression)
+    TOKEN_READ      [reduce using rule 16 (concat_expression)]
+    SQRT            reduce using rule 11 (primary_expression)
+    SQRT            [reduce using rule 16 (concat_expression)]
+    CBRT            reduce using rule 11 (primary_expression)
+    CBRT            [reduce using rule 16 (concat_expression)]
+    COLON           reduce using rule 11 (primary_expression)
+    COLON           [reduce using rule 16 (concat_expression)]
+    TERNARY         reduce using rule 11 (primary_expression)
+    TERNARY         [reduce using rule 16 (concat_expression)]
+    OR_OP           reduce using rule 11 (primary_expression)
+    OR_OP           [reduce using rule 16 (concat_expression)]
+    ADD_EQU         reduce using rule 11 (primary_expression)
+    ADD_EQU         [reduce using rule 16 (concat_expression)]
+    MUL_EQU         reduce using rule 11 (primary_expression)
+    MUL_EQU         [reduce using rule 16 (concat_expression)]
+    SUB_EQU         reduce using rule 11 (primary_expression)
+    SUB_EQU         [reduce using rule 16 (concat_expression)]
+    DIV_EQU         reduce using rule 11 (primary_expression)
+    DIV_EQU         [reduce using rule 16 (concat_expression)]
+    R_EQU           reduce using rule 11 (primary_expression)
+    R_EQU           [reduce using rule 16 (concat_expression)]
+    L_EQU           reduce using rule 11 (primary_expression)
+    L_EQU           [reduce using rule 16 (concat_expression)]
+    OR_EQU          reduce using rule 11 (primary_expression)
+    OR_EQU          [reduce using rule 16 (concat_expression)]
+    AND_EQU         reduce using rule 11 (primary_expression)
+    AND_EQU         [reduce using rule 16 (concat_expression)]
+    R_OP            reduce using rule 11 (primary_expression)
+    R_OP            [reduce using rule 16 (concat_expression)]
+    L_OP            reduce using rule 11 (primary_expression)
+    L_OP            [reduce using rule 16 (concat_expression)]
+    AND_OP          reduce using rule 11 (primary_expression)
+    AND_OP          [reduce using rule 16 (concat_expression)]
+    GEQU            reduce using rule 11 (primary_expression)
+    GEQU            [reduce using rule 16 (concat_expression)]
+    LEQU            reduce using rule 11 (primary_expression)
+    LEQU            [reduce using rule 16 (concat_expression)]
+    DEC             reduce using rule 11 (primary_expression)
+    DEC             [reduce using rule 16 (concat_expression)]
+    INC             reduce using rule 11 (primary_expression)
+    INC             [reduce using rule 16 (concat_expression)]
+    LTHAN           reduce using rule 11 (primary_expression)
+    LTHAN           [reduce using rule 16 (concat_expression)]
+    TRUE            reduce using rule 11 (primary_expression)
+    TRUE            [reduce using rule 16 (concat_expression)]
+    FALSE           reduce using rule 11 (primary_expression)
+    FALSE           [reduce using rule 16 (concat_expression)]
+    GTHAN           reduce using rule 11 (primary_expression)
+    GTHAN           [reduce using rule 16 (concat_expression)]
+    EQ_OP           reduce using rule 11 (primary_expression)
+    EQ_OP           [reduce using rule 16 (concat_expression)]
+    TO_STRING       reduce using rule 11 (primary_expression)
+    TO_STRING       [reduce using rule 16 (concat_expression)]
+    TO_INT          reduce using rule 11 (primary_expression)
+    TO_INT          [reduce using rule 16 (concat_expression)]
+    NE_OP           reduce using rule 11 (primary_expression)
+    NE_OP           [reduce using rule 16 (concat_expression)]
+    LPAREN          reduce using rule 11 (primary_expression)
+    LPAREN          [reduce using rule 16 (concat_expression)]
+    RPAREN          reduce using rule 11 (primary_expression)
+    RPAREN          [reduce using rule 16 (concat_expression)]
+    CONCAT          [reduce using rule 11 (primary_expression)]
+    CONCAT          [reduce using rule 16 (concat_expression)]
+    SEMICOLON       reduce using rule 11 (primary_expression)
+    SEMICOLON       [reduce using rule 16 (concat_expression)]
+    SUB             reduce using rule 11 (primary_expression)
+    SUB             [reduce using rule 16 (concat_expression)]
+    ADD             reduce using rule 11 (primary_expression)
+    ADD             [reduce using rule 16 (concat_expression)]
+    POW             reduce using rule 11 (primary_expression)
+    POW             [reduce using rule 16 (concat_expression)]
+    AND             reduce using rule 11 (primary_expression)
+    AND             [reduce using rule 16 (concat_expression)]
+    XOR             reduce using rule 11 (primary_expression)
+    XOR             [reduce using rule 16 (concat_expression)]
+    OR              reduce using rule 11 (primary_expression)
+    OR              [reduce using rule 16 (concat_expression)]
+    MOD             reduce using rule 11 (primary_expression)
+    MOD             [reduce using rule 16 (concat_expression)]
+    DIV             reduce using rule 11 (primary_expression)
+    DIV             [reduce using rule 16 (concat_expression)]
+    MUL             reduce using rule 11 (primary_expression)
+    MUL             [reduce using rule 16 (concat_expression)]
+    INT             reduce using rule 11 (primary_expression)
+    INT             [reduce using rule 16 (concat_expression)]
+    FLOAT           reduce using rule 11 (primary_expression)
+    FLOAT           [reduce using rule 16 (concat_expression)]
+    STRING          reduce using rule 11 (primary_expression)
+    STRING          [reduce using rule 16 (concat_expression)]
+    STRING_LITERAL  reduce using rule 11 (primary_expression)
+    STRING_LITERAL  [reduce using rule 16 (concat_expression)]
+    TOKEN_ID        reduce using rule 11 (primary_expression)
+    TOKEN_ID        [reduce using rule 16 (concat_expression)]
+    $default        reduce using rule 11 (primary_expression)
+
+
+state 58
+
+   73 unary_expression: SYSCALL LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 125
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 59
+
+   13 primary_expression: LPAREN . expression RPAREN
+   70 unary_expression: PRINTLN LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 126
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 60
+
+   19 concat_expression: expression . CONCAT string
+
+    CONCAT  shift, and go to state 80
+
+
+state 61
+
+   15 expression: concat_expression .
+   20 concat_expression: concat_expression . CONCAT concat_expression
+   71 unary_expression: PRINTLN concat_expression .
+
+    CONCAT  shift, and go to state 82
+
+    CONCAT    [reduce using rule 15 (expression)]
+    CONCAT    [reduce using rule 71 (unary_expression)]
+    $default  reduce using rule 71 (unary_expression)
+
+
+state 62
+
+   72 unary_expression: PRINTNL LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 127
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 63
+
+   84 loop_statement: WHILE LPAREN . expression RPAREN compound_statement
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 128
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 64
+
+   91 jump_statement: BREAK SEMICOLON .
+
+    $default  reduce using rule 91 (jump_statement)
+
+
+state 65
+
+   90 jump_statement: CONTINUE SEMICOLON .
+
+    $default  reduce using rule 90 (jump_statement)
+
+
+state 66
+
+   82 if_statement: IF LPAREN . expression RPAREN compound_statement
+   83             | IF LPAREN . expression RPAREN compound_statement ELSE compound_statement
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 129
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 67
+
+   74 unary_expression: TOKEN_READ LPAREN . TYPE_INT RPAREN
+   75                 | TOKEN_READ LPAREN . TYPE_BYTE RPAREN
+   76                 | TOKEN_READ LPAREN . TYPE_SHORT RPAREN
+   77                 | TOKEN_READ LPAREN . TYPE_LONG RPAREN
+   78                 | TOKEN_READ LPAREN . TYPE_LONG RPAREN
+  118 string: TOKEN_READ LPAREN . RPAREN
+  119       | TOKEN_READ LPAREN . TYPE_STRING RPAREN
+
+    TYPE_BYTE    shift, and go to state 130
+    TYPE_SHORT   shift, and go to state 131
+    TYPE_INT     shift, and go to state 132
+    TYPE_LONG    shift, and go to state 133
+    TYPE_STRING  shift, and go to state 134
+    RPAREN       shift, and go to state 135
+
+
+state 68
+
+   96 declaration_specifiers: VAR LTHAN . declaration_specifiers GTHAN TOKEN_ID
+
+    VAR          shift, and go to state 9
+    TYPE_BYTE    shift, and go to state 12
+    TYPE_SHORT   shift, and go to state 13
+    TYPE_INT     shift, and go to state 14
+    TYPE_LONG    shift, and go to state 15
+    TYPE_STRING  shift, and go to state 16
+
+    declaration_specifiers  go to state 136
+    type_specifier          go to state 55
+
+
+state 69
+
+   97 declaration_specifiers: VAR TOKEN_ID . EQUAL expression
+
+    EQUAL  shift, and go to state 137
+
+
+state 70
+
+   68 unary_expression: SQRT LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 138
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 71
+
+   69 unary_expression: CBRT LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 139
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 72
+
+   66 unary_expression: DEC unary_expression .
+
+    $default  reduce using rule 66 (unary_expression)
+
+
+state 73
+
+   11 primary_expression: string .
+
+    $default  reduce using rule 11 (primary_expression)
+
+
+state 74
+
+   65 unary_expression: INC unary_expression .
+
+    $default  reduce using rule 65 (unary_expression)
+
+
+state 75
+
+  117 string: TO_STRING LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 140
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 76
+
+   67 unary_expression: TO_INT LPAREN . expression RPAREN
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 141
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 77
+
+   13 primary_expression: LPAREN expression . RPAREN
+   19 concat_expression: expression . CONCAT string
+
+    RPAREN  shift, and go to state 142
+    CONCAT  shift, and go to state 80
+
+
+state 78
+
+    0 $accept: pony $end .
+
+    $default  accept
+
+
+state 79
+
+    8 statement_list: statement_list statement .
+
+    $default  reduce using rule 8 (statement_list)
+
+
+state 80
+
+   19 concat_expression: expression CONCAT . string
+
+    TOKEN_READ      shift, and go to state 143
+    TO_STRING       shift, and go to state 21
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    string  go to state 144
+
+
+state 81
+
+   10 expression_statement: expression SEMICOLON .
+
+    $default  reduce using rule 10 (expression_statement)
+
+
+state 82
+
+   20 concat_expression: concat_expression CONCAT . concat_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 60
+    concat_expression          go to state 145
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 83
+
+   33 conditional_expression: logical_or_expression TERNARY . expression COLON expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 146
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 84
+
+   35 logical_or_expression: logical_or_expression OR_OP . logical_and_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    logical_and_expression     go to state 147
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 85
+
+   37 logical_and_expression: logical_and_expression AND_OP . inclusive_or_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    inclusive_or_expression    go to state 148
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 86
+
+   39 inclusive_or_expression: inclusive_or_expression OR . exclusive_or_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    exclusive_or_expression    go to state 149
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 87
+
+   41 exclusive_or_expression: exclusive_or_expression XOR . and_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    and_expression             go to state 150
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 88
+
+   43 and_expression: and_expression AND . equality_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    equality_expression        go to state 151
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 89
+
+   45 equality_expression: equality_expression EQ_OP . relational_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    relational_expression      go to state 152
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 90
+
+   46 equality_expression: equality_expression NE_OP . relational_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    relational_expression      go to state 153
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 91
+
+   51 relational_expression: relational_expression GEQU . shift_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    shift_expression           go to state 154
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 92
+
+   50 relational_expression: relational_expression LEQU . shift_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    shift_expression           go to state 155
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 93
+
+   48 relational_expression: relational_expression LTHAN . shift_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    shift_expression           go to state 156
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 94
+
+   49 relational_expression: relational_expression GTHAN . shift_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    shift_expression           go to state 157
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 95
+
+   54 shift_expression: shift_expression R_OP . additive_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    additive_expression        go to state 158
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 96
+
+   53 shift_expression: shift_expression L_OP . additive_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    additive_expression        go to state 159
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 97
+
+   57 additive_expression: additive_expression SUB . multiplicative_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    multiplicative_expression  go to state 160
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 98
+
+   56 additive_expression: additive_expression ADD . multiplicative_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    multiplicative_expression  go to state 161
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 99
+
+   58 additive_expression: additive_expression multiplicative_expression .
+   60 multiplicative_expression: multiplicative_expression . MUL unary_expression
+   61                          | multiplicative_expression . DIV unary_expression
+   62                          | multiplicative_expression . MOD unary_expression
+   63                          | multiplicative_expression . POW unary_expression
+
+    POW  shift, and go to state 101
+    MOD  shift, and go to state 102
+    DIV  shift, and go to state 103
+    MUL  shift, and go to state 104
+
+    POW       [reduce using rule 58 (additive_expression)]
+    MOD       [reduce using rule 58 (additive_expression)]
+    DIV       [reduce using rule 58 (additive_expression)]
+    MUL       [reduce using rule 58 (additive_expression)]
+    $default  reduce using rule 58 (additive_expression)
+
+
+state 100
+
+   59 multiplicative_expression: unary_expression .
+
+    $default  reduce using rule 59 (multiplicative_expression)
+
+
+state 101
+
+   63 multiplicative_expression: multiplicative_expression POW . unary_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression  go to state 33
+    unary_expression    go to state 162
+    postfix_expression  go to state 49
+    number              go to state 56
+    string              go to state 73
+
+
+state 102
+
+   62 multiplicative_expression: multiplicative_expression MOD . unary_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression  go to state 33
+    unary_expression    go to state 163
+    postfix_expression  go to state 49
+    number              go to state 56
+    string              go to state 73
+
+
+state 103
+
+   61 multiplicative_expression: multiplicative_expression DIV . unary_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression  go to state 33
+    unary_expression    go to state 164
+    postfix_expression  go to state 49
+    number              go to state 56
+    string              go to state 73
+
+
+state 104
+
+   60 multiplicative_expression: multiplicative_expression MUL . unary_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression  go to state 33
+    unary_expression    go to state 165
+    postfix_expression  go to state 49
+    number              go to state 56
+    string              go to state 73
+
+
+state 105
+
+   25 assignment_expression: unary_expression ADD_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 166
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 106
+
+   24 assignment_expression: unary_expression MUL_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 167
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 107
+
+   26 assignment_expression: unary_expression SUB_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 168
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 108
+
+   27 assignment_expression: unary_expression DIV_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 169
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 109
+
+   31 assignment_expression: unary_expression R_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 170
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 110
+
+   30 assignment_expression: unary_expression L_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 171
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 111
+
+   29 assignment_expression: unary_expression OR_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 172
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 112
+
+   28 assignment_expression: unary_expression AND_EQU . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 173
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 113
+
+   22 assignment_expression: unary_expression EQ_OP . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 174
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 114
+
+   23 assignment_expression: unary_expression NE_OP . assignment_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 175
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 115
+
+   81 postfix_expression: postfix_expression DEC .
+
+    $default  reduce using rule 81 (postfix_expression)
+
+
+state 116
+
+   80 postfix_expression: postfix_expression INC .
+
+    $default  reduce using rule 80 (postfix_expression)
+
+
+state 117
+
+  104 direct_declarator: LPAREN . direct_declarator RPAREN
+
+    LPAREN    shift, and go to state 117
+    TOKEN_ID  shift, and go to state 119
+
+    direct_declarator  go to state 176
+
+
+state 118
+
+   92 declaration: declaration_specifiers SEMICOLON .
+
+    $default  reduce using rule 92 (declaration)
+
+
+state 119
+
+  103 direct_declarator: TOKEN_ID .
+
+    $default  reduce using rule 103 (direct_declarator)
+
+
+state 120
+
+  107 init_declarator: direct_declarator .
+  108                | direct_declarator . EQ_OP initializer
+
+    EQ_OP  shift, and go to state 177
+
+    $default  reduce using rule 107 (init_declarator)
+
+
+state 121
+
+  110 init_declarator_list: init_declarator .
+
+    $default  reduce using rule 110 (init_declarator_list)
+
+
+state 122
+
+   93 declaration: declaration_specifiers init_declarator_list . SEMICOLON
+
+    SEMICOLON  shift, and go to state 178
+
+
+state 123
+
+   95 declaration_specifiers: type_specifier declaration_specifiers .
+
+    $default  reduce using rule 95 (declaration_specifiers)
+
+
+state 124
+
+   17 concat_expression: string CONCAT . string
+   18                  | string CONCAT . expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 179
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 180
+
+
+state 125
+
+   19 concat_expression: expression . CONCAT string
+   73 unary_expression: SYSCALL LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 181
+    CONCAT  shift, and go to state 80
+
+
+state 126
+
+   13 primary_expression: LPAREN expression . RPAREN
+   19 concat_expression: expression . CONCAT string
+   70 unary_expression: PRINTLN LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 182
+    CONCAT  shift, and go to state 80
+
+
+state 127
+
+   19 concat_expression: expression . CONCAT string
+   72 unary_expression: PRINTNL LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 183
+    CONCAT  shift, and go to state 80
+
+
+state 128
+
+   19 concat_expression: expression . CONCAT string
+   84 loop_statement: WHILE LPAREN expression . RPAREN compound_statement
+
+    RPAREN  shift, and go to state 184
+    CONCAT  shift, and go to state 80
+
+
+state 129
+
+   19 concat_expression: expression . CONCAT string
+   82 if_statement: IF LPAREN expression . RPAREN compound_statement
+   83             | IF LPAREN expression . RPAREN compound_statement ELSE compound_statement
+
+    RPAREN  shift, and go to state 185
+    CONCAT  shift, and go to state 80
+
+
+state 130
+
+   75 unary_expression: TOKEN_READ LPAREN TYPE_BYTE . RPAREN
+
+    RPAREN  shift, and go to state 186
+
+
+state 131
+
+   76 unary_expression: TOKEN_READ LPAREN TYPE_SHORT . RPAREN
+
+    RPAREN  shift, and go to state 187
+
+
+state 132
+
+   74 unary_expression: TOKEN_READ LPAREN TYPE_INT . RPAREN
+
+    RPAREN  shift, and go to state 188
+
+
+state 133
+
+   77 unary_expression: TOKEN_READ LPAREN TYPE_LONG . RPAREN
+   78                 | TOKEN_READ LPAREN TYPE_LONG . RPAREN
+
+    RPAREN  shift, and go to state 189
+
+
+state 134
+
+  119 string: TOKEN_READ LPAREN TYPE_STRING . RPAREN
+
+    RPAREN  shift, and go to state 190
+
+
+state 135
+
+  118 string: TOKEN_READ LPAREN RPAREN .
+
+    $default  reduce using rule 118 (string)
+
+
+state 136
+
+   96 declaration_specifiers: VAR LTHAN declaration_specifiers . GTHAN TOKEN_ID
+
+    GTHAN  shift, and go to state 191
+
+
+state 137
+
+   97 declaration_specifiers: VAR TOKEN_ID EQUAL . expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 192
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 138
+
+   19 concat_expression: expression . CONCAT string
+   68 unary_expression: SQRT LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 193
+    CONCAT  shift, and go to state 80
+
+
+state 139
+
+   19 concat_expression: expression . CONCAT string
+   69 unary_expression: CBRT LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 194
+    CONCAT  shift, and go to state 80
+
+
+state 140
+
+   19 concat_expression: expression . CONCAT string
+  117 string: TO_STRING LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 195
+    CONCAT  shift, and go to state 80
+
+
+state 141
+
+   19 concat_expression: expression . CONCAT string
+   67 unary_expression: TO_INT LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 196
+    CONCAT  shift, and go to state 80
+
+
+state 142
+
+   13 primary_expression: LPAREN expression RPAREN .
+
+    $default  reduce using rule 13 (primary_expression)
+
+
+state 143
+
+  118 string: TOKEN_READ . LPAREN RPAREN
+  119       | TOKEN_READ . LPAREN TYPE_STRING RPAREN
+
+    LPAREN  shift, and go to state 197
+
+
+state 144
+
+   19 concat_expression: expression CONCAT string .
+
+    $default  reduce using rule 19 (concat_expression)
+
+
+state 145
+
+   15 expression: concat_expression .
+   20 concat_expression: concat_expression . CONCAT concat_expression
+   20                  | concat_expression CONCAT concat_expression .
+
+    CONCAT  shift, and go to state 82
+
+    CONCAT    [reduce using rule 15 (expression)]
+    CONCAT    [reduce using rule 20 (concat_expression)]
+    $default  reduce using rule 20 (concat_expression)
+
+
+state 146
+
+   19 concat_expression: expression . CONCAT string
+   33 conditional_expression: logical_or_expression TERNARY expression . COLON expression
+
+    COLON   shift, and go to state 198
+    CONCAT  shift, and go to state 80
+
+
+state 147
+
+   35 logical_or_expression: logical_or_expression OR_OP logical_and_expression .
+   37 logical_and_expression: logical_and_expression . AND_OP inclusive_or_expression
+
+    AND_OP  shift, and go to state 85
+
+    AND_OP    [reduce using rule 35 (logical_or_expression)]
+    $default  reduce using rule 35 (logical_or_expression)
+
+
+state 148
+
+   37 logical_and_expression: logical_and_expression AND_OP inclusive_or_expression .
+   39 inclusive_or_expression: inclusive_or_expression . OR exclusive_or_expression
+
+    OR  shift, and go to state 86
+
+    OR        [reduce using rule 37 (logical_and_expression)]
+    $default  reduce using rule 37 (logical_and_expression)
+
+
+state 149
+
+   39 inclusive_or_expression: inclusive_or_expression OR exclusive_or_expression .
+   41 exclusive_or_expression: exclusive_or_expression . XOR and_expression
+
+    $default  reduce using rule 39 (inclusive_or_expression)
+
+
+state 150
+
+   41 exclusive_or_expression: exclusive_or_expression XOR and_expression .
+   43 and_expression: and_expression . AND equality_expression
+
+    $default  reduce using rule 41 (exclusive_or_expression)
+
+
+state 151
+
+   43 and_expression: and_expression AND equality_expression .
+   45 equality_expression: equality_expression . EQ_OP relational_expression
+   46                    | equality_expression . NE_OP relational_expression
+
+    EQ_OP  shift, and go to state 89
+    NE_OP  shift, and go to state 90
+
+    EQ_OP     [reduce using rule 43 (and_expression)]
+    NE_OP     [reduce using rule 43 (and_expression)]
+    $default  reduce using rule 43 (and_expression)
+
+
+state 152
+
+   45 equality_expression: equality_expression EQ_OP relational_expression .
+   48 relational_expression: relational_expression . LTHAN shift_expression
+   49                      | relational_expression . GTHAN shift_expression
+   50                      | relational_expression . LEQU shift_expression
+   51                      | relational_expression . GEQU shift_expression
+
+    GEQU   shift, and go to state 91
+    LEQU   shift, and go to state 92
+    LTHAN  shift, and go to state 93
+    GTHAN  shift, and go to state 94
+
+    GEQU      [reduce using rule 45 (equality_expression)]
+    LEQU      [reduce using rule 45 (equality_expression)]
+    LTHAN     [reduce using rule 45 (equality_expression)]
+    GTHAN     [reduce using rule 45 (equality_expression)]
+    $default  reduce using rule 45 (equality_expression)
+
+
+state 153
+
+   46 equality_expression: equality_expression NE_OP relational_expression .
+   48 relational_expression: relational_expression . LTHAN shift_expression
+   49                      | relational_expression . GTHAN shift_expression
+   50                      | relational_expression . LEQU shift_expression
+   51                      | relational_expression . GEQU shift_expression
+
+    GEQU   shift, and go to state 91
+    LEQU   shift, and go to state 92
+    LTHAN  shift, and go to state 93
+    GTHAN  shift, and go to state 94
+
+    GEQU      [reduce using rule 46 (equality_expression)]
+    LEQU      [reduce using rule 46 (equality_expression)]
+    LTHAN     [reduce using rule 46 (equality_expression)]
+    GTHAN     [reduce using rule 46 (equality_expression)]
+    $default  reduce using rule 46 (equality_expression)
+
+
+state 154
+
+   51 relational_expression: relational_expression GEQU shift_expression .
+   53 shift_expression: shift_expression . L_OP additive_expression
+   54                 | shift_expression . R_OP additive_expression
+
+    R_OP  shift, and go to state 95
+    L_OP  shift, and go to state 96
+
+    R_OP      [reduce using rule 51 (relational_expression)]
+    L_OP      [reduce using rule 51 (relational_expression)]
+    $default  reduce using rule 51 (relational_expression)
+
+
+state 155
+
+   50 relational_expression: relational_expression LEQU shift_expression .
+   53 shift_expression: shift_expression . L_OP additive_expression
+   54                 | shift_expression . R_OP additive_expression
+
+    R_OP  shift, and go to state 95
+    L_OP  shift, and go to state 96
+
+    R_OP      [reduce using rule 50 (relational_expression)]
+    L_OP      [reduce using rule 50 (relational_expression)]
+    $default  reduce using rule 50 (relational_expression)
+
+
+state 156
+
+   48 relational_expression: relational_expression LTHAN shift_expression .
+   53 shift_expression: shift_expression . L_OP additive_expression
+   54                 | shift_expression . R_OP additive_expression
+
+    R_OP  shift, and go to state 95
+    L_OP  shift, and go to state 96
+
+    R_OP      [reduce using rule 48 (relational_expression)]
+    L_OP      [reduce using rule 48 (relational_expression)]
+    $default  reduce using rule 48 (relational_expression)
+
+
+state 157
+
+   49 relational_expression: relational_expression GTHAN shift_expression .
+   53 shift_expression: shift_expression . L_OP additive_expression
+   54                 | shift_expression . R_OP additive_expression
+
+    R_OP  shift, and go to state 95
+    L_OP  shift, and go to state 96
+
+    R_OP      [reduce using rule 49 (relational_expression)]
+    L_OP      [reduce using rule 49 (relational_expression)]
+    $default  reduce using rule 49 (relational_expression)
+
+
+state 158
+
+   54 shift_expression: shift_expression R_OP additive_expression .
+   56 additive_expression: additive_expression . ADD multiplicative_expression
+   57                    | additive_expression . SUB multiplicative_expression
+   58                    | additive_expression . multiplicative_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    SYSCALL         [reduce using rule 54 (shift_expression)]
+    PRINTLN         [reduce using rule 54 (shift_expression)]
+    PRINTNL         [reduce using rule 54 (shift_expression)]
+    TOKEN_READ      [reduce using rule 54 (shift_expression)]
+    SQRT            [reduce using rule 54 (shift_expression)]
+    CBRT            [reduce using rule 54 (shift_expression)]
+    DEC             [reduce using rule 54 (shift_expression)]
+    INC             [reduce using rule 54 (shift_expression)]
+    TRUE            [reduce using rule 54 (shift_expression)]
+    FALSE           [reduce using rule 54 (shift_expression)]
+    TO_STRING       [reduce using rule 54 (shift_expression)]
+    TO_INT          [reduce using rule 54 (shift_expression)]
+    LPAREN          [reduce using rule 54 (shift_expression)]
+    INT             [reduce using rule 54 (shift_expression)]
+    FLOAT           [reduce using rule 54 (shift_expression)]
+    STRING          [reduce using rule 54 (shift_expression)]
+    STRING_LITERAL  [reduce using rule 54 (shift_expression)]
+    $default        reduce using rule 54 (shift_expression)
+
+    primary_expression         go to state 33
+    multiplicative_expression  go to state 99
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 159
+
+   53 shift_expression: shift_expression L_OP additive_expression .
+   56 additive_expression: additive_expression . ADD multiplicative_expression
+   57                    | additive_expression . SUB multiplicative_expression
+   58                    | additive_expression . multiplicative_expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    SYSCALL         [reduce using rule 53 (shift_expression)]
+    PRINTLN         [reduce using rule 53 (shift_expression)]
+    PRINTNL         [reduce using rule 53 (shift_expression)]
+    TOKEN_READ      [reduce using rule 53 (shift_expression)]
+    SQRT            [reduce using rule 53 (shift_expression)]
+    CBRT            [reduce using rule 53 (shift_expression)]
+    DEC             [reduce using rule 53 (shift_expression)]
+    INC             [reduce using rule 53 (shift_expression)]
+    TRUE            [reduce using rule 53 (shift_expression)]
+    FALSE           [reduce using rule 53 (shift_expression)]
+    TO_STRING       [reduce using rule 53 (shift_expression)]
+    TO_INT          [reduce using rule 53 (shift_expression)]
+    LPAREN          [reduce using rule 53 (shift_expression)]
+    INT             [reduce using rule 53 (shift_expression)]
+    FLOAT           [reduce using rule 53 (shift_expression)]
+    STRING          [reduce using rule 53 (shift_expression)]
+    STRING_LITERAL  [reduce using rule 53 (shift_expression)]
+    $default        reduce using rule 53 (shift_expression)
+
+    primary_expression         go to state 33
+    multiplicative_expression  go to state 99
+    unary_expression           go to state 100
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 160
+
+   57 additive_expression: additive_expression SUB multiplicative_expression .
+   60 multiplicative_expression: multiplicative_expression . MUL unary_expression
+   61                          | multiplicative_expression . DIV unary_expression
+   62                          | multiplicative_expression . MOD unary_expression
+   63                          | multiplicative_expression . POW unary_expression
+
+    POW  shift, and go to state 101
+    MOD  shift, and go to state 102
+    DIV  shift, and go to state 103
+    MUL  shift, and go to state 104
+
+    $default  reduce using rule 57 (additive_expression)
+
+
+state 161
+
+   56 additive_expression: additive_expression ADD multiplicative_expression .
+   60 multiplicative_expression: multiplicative_expression . MUL unary_expression
+   61                          | multiplicative_expression . DIV unary_expression
+   62                          | multiplicative_expression . MOD unary_expression
+   63                          | multiplicative_expression . POW unary_expression
+
+    POW  shift, and go to state 101
+    MOD  shift, and go to state 102
+    DIV  shift, and go to state 103
+    MUL  shift, and go to state 104
+
+    $default  reduce using rule 56 (additive_expression)
+
+
+state 162
+
+   63 multiplicative_expression: multiplicative_expression POW unary_expression .
+
+    $default  reduce using rule 63 (multiplicative_expression)
+
+
+state 163
+
+   62 multiplicative_expression: multiplicative_expression MOD unary_expression .
+
+    $default  reduce using rule 62 (multiplicative_expression)
+
+
+state 164
+
+   61 multiplicative_expression: multiplicative_expression DIV unary_expression .
+
+    $default  reduce using rule 61 (multiplicative_expression)
+
+
+state 165
+
+   60 multiplicative_expression: multiplicative_expression MUL unary_expression .
+
+    $default  reduce using rule 60 (multiplicative_expression)
+
+
+state 166
+
+   25 assignment_expression: unary_expression ADD_EQU assignment_expression .
+
+    $default  reduce using rule 25 (assignment_expression)
+
+
+state 167
+
+   24 assignment_expression: unary_expression MUL_EQU assignment_expression .
+
+    $default  reduce using rule 24 (assignment_expression)
+
+
+state 168
+
+   26 assignment_expression: unary_expression SUB_EQU assignment_expression .
+
+    $default  reduce using rule 26 (assignment_expression)
+
+
+state 169
+
+   27 assignment_expression: unary_expression DIV_EQU assignment_expression .
+
+    $default  reduce using rule 27 (assignment_expression)
+
+
+state 170
+
+   31 assignment_expression: unary_expression R_EQU assignment_expression .
+
+    $default  reduce using rule 31 (assignment_expression)
+
+
+state 171
+
+   30 assignment_expression: unary_expression L_EQU assignment_expression .
+
+    $default  reduce using rule 30 (assignment_expression)
+
+
+state 172
+
+   29 assignment_expression: unary_expression OR_EQU assignment_expression .
+
+    $default  reduce using rule 29 (assignment_expression)
+
+
+state 173
+
+   28 assignment_expression: unary_expression AND_EQU assignment_expression .
+
+    $default  reduce using rule 28 (assignment_expression)
+
+
+state 174
+
+   22 assignment_expression: unary_expression EQ_OP assignment_expression .
+
+    $default  reduce using rule 22 (assignment_expression)
+
+
+state 175
+
+   23 assignment_expression: unary_expression NE_OP assignment_expression .
+
+    $default  reduce using rule 23 (assignment_expression)
+
+
+state 176
+
+  104 direct_declarator: LPAREN direct_declarator . RPAREN
+
+    RPAREN  shift, and go to state 199
+
+
+state 177
+
+  108 init_declarator: direct_declarator EQ_OP . initializer
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    assignment_expression      go to state 200
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    initializer                go to state 201
+    number                     go to state 56
+    string                     go to state 73
+
+
+state 178
+
+   93 declaration: declaration_specifiers init_declarator_list SEMICOLON .
+
+    $default  reduce using rule 93 (declaration)
+
+
+state 179
+
+   18 concat_expression: string CONCAT expression .
+   19                  | expression . CONCAT string
+
+    CONCAT  shift, and go to state 80
+
+    CONCAT    [reduce using rule 18 (concat_expression)]
+    $default  reduce using rule 18 (concat_expression)
+
+
+state 180
+
+   11 primary_expression: string .
+   16 concat_expression: string .
+   17                  | string . CONCAT string
+   17                  | string CONCAT string .
+   18                  | string . CONCAT expression
+
+    CONCAT  shift, and go to state 124
+
+    SYSCALL         reduce using rule 11 (primary_expression)
+    SYSCALL         [reduce using rule 16 (concat_expression)]
+    SYSCALL         [reduce using rule 17 (concat_expression)]
+    PRINTLN         reduce using rule 11 (primary_expression)
+    PRINTLN         [reduce using rule 16 (concat_expression)]
+    PRINTLN         [reduce using rule 17 (concat_expression)]
+    PRINTNL         reduce using rule 11 (primary_expression)
+    PRINTNL         [reduce using rule 16 (concat_expression)]
+    PRINTNL         [reduce using rule 17 (concat_expression)]
+    TOKEN_READ      reduce using rule 11 (primary_expression)
+    TOKEN_READ      [reduce using rule 16 (concat_expression)]
+    TOKEN_READ      [reduce using rule 17 (concat_expression)]
+    SQRT            reduce using rule 11 (primary_expression)
+    SQRT            [reduce using rule 16 (concat_expression)]
+    SQRT            [reduce using rule 17 (concat_expression)]
+    CBRT            reduce using rule 11 (primary_expression)
+    CBRT            [reduce using rule 16 (concat_expression)]
+    CBRT            [reduce using rule 17 (concat_expression)]
+    COLON           reduce using rule 11 (primary_expression)
+    COLON           [reduce using rule 16 (concat_expression)]
+    COLON           [reduce using rule 17 (concat_expression)]
+    TERNARY         reduce using rule 11 (primary_expression)
+    TERNARY         [reduce using rule 16 (concat_expression)]
+    TERNARY         [reduce using rule 17 (concat_expression)]
+    OR_OP           reduce using rule 11 (primary_expression)
+    OR_OP           [reduce using rule 16 (concat_expression)]
+    OR_OP           [reduce using rule 17 (concat_expression)]
+    ADD_EQU         reduce using rule 11 (primary_expression)
+    ADD_EQU         [reduce using rule 16 (concat_expression)]
+    ADD_EQU         [reduce using rule 17 (concat_expression)]
+    MUL_EQU         reduce using rule 11 (primary_expression)
+    MUL_EQU         [reduce using rule 16 (concat_expression)]
+    MUL_EQU         [reduce using rule 17 (concat_expression)]
+    SUB_EQU         reduce using rule 11 (primary_expression)
+    SUB_EQU         [reduce using rule 16 (concat_expression)]
+    SUB_EQU         [reduce using rule 17 (concat_expression)]
+    DIV_EQU         reduce using rule 11 (primary_expression)
+    DIV_EQU         [reduce using rule 16 (concat_expression)]
+    DIV_EQU         [reduce using rule 17 (concat_expression)]
+    R_EQU           reduce using rule 11 (primary_expression)
+    R_EQU           [reduce using rule 16 (concat_expression)]
+    R_EQU           [reduce using rule 17 (concat_expression)]
+    L_EQU           reduce using rule 11 (primary_expression)
+    L_EQU           [reduce using rule 16 (concat_expression)]
+    L_EQU           [reduce using rule 17 (concat_expression)]
+    OR_EQU          reduce using rule 11 (primary_expression)
+    OR_EQU          [reduce using rule 16 (concat_expression)]
+    OR_EQU          [reduce using rule 17 (concat_expression)]
+    AND_EQU         reduce using rule 11 (primary_expression)
+    AND_EQU         [reduce using rule 16 (concat_expression)]
+    AND_EQU         [reduce using rule 17 (concat_expression)]
+    R_OP            reduce using rule 11 (primary_expression)
+    R_OP            [reduce using rule 16 (concat_expression)]
+    R_OP            [reduce using rule 17 (concat_expression)]
+    L_OP            reduce using rule 11 (primary_expression)
+    L_OP            [reduce using rule 16 (concat_expression)]
+    L_OP            [reduce using rule 17 (concat_expression)]
+    AND_OP          reduce using rule 11 (primary_expression)
+    AND_OP          [reduce using rule 16 (concat_expression)]
+    AND_OP          [reduce using rule 17 (concat_expression)]
+    GEQU            reduce using rule 11 (primary_expression)
+    GEQU            [reduce using rule 16 (concat_expression)]
+    GEQU            [reduce using rule 17 (concat_expression)]
+    LEQU            reduce using rule 11 (primary_expression)
+    LEQU            [reduce using rule 16 (concat_expression)]
+    LEQU            [reduce using rule 17 (concat_expression)]
+    DEC             reduce using rule 11 (primary_expression)
+    DEC             [reduce using rule 16 (concat_expression)]
+    DEC             [reduce using rule 17 (concat_expression)]
+    INC             reduce using rule 11 (primary_expression)
+    INC             [reduce using rule 16 (concat_expression)]
+    INC             [reduce using rule 17 (concat_expression)]
+    LTHAN           reduce using rule 11 (primary_expression)
+    LTHAN           [reduce using rule 16 (concat_expression)]
+    LTHAN           [reduce using rule 17 (concat_expression)]
+    TRUE            reduce using rule 11 (primary_expression)
+    TRUE            [reduce using rule 16 (concat_expression)]
+    TRUE            [reduce using rule 17 (concat_expression)]
+    FALSE           reduce using rule 11 (primary_expression)
+    FALSE           [reduce using rule 16 (concat_expression)]
+    FALSE           [reduce using rule 17 (concat_expression)]
+    GTHAN           reduce using rule 11 (primary_expression)
+    GTHAN           [reduce using rule 16 (concat_expression)]
+    GTHAN           [reduce using rule 17 (concat_expression)]
+    EQ_OP           reduce using rule 11 (primary_expression)
+    EQ_OP           [reduce using rule 16 (concat_expression)]
+    EQ_OP           [reduce using rule 17 (concat_expression)]
+    TO_STRING       reduce using rule 11 (primary_expression)
+    TO_STRING       [reduce using rule 16 (concat_expression)]
+    TO_STRING       [reduce using rule 17 (concat_expression)]
+    TO_INT          reduce using rule 11 (primary_expression)
+    TO_INT          [reduce using rule 16 (concat_expression)]
+    TO_INT          [reduce using rule 17 (concat_expression)]
+    NE_OP           reduce using rule 11 (primary_expression)
+    NE_OP           [reduce using rule 16 (concat_expression)]
+    NE_OP           [reduce using rule 17 (concat_expression)]
+    LPAREN          reduce using rule 11 (primary_expression)
+    LPAREN          [reduce using rule 16 (concat_expression)]
+    LPAREN          [reduce using rule 17 (concat_expression)]
+    RPAREN          reduce using rule 11 (primary_expression)
+    RPAREN          [reduce using rule 16 (concat_expression)]
+    RPAREN          [reduce using rule 17 (concat_expression)]
+    CONCAT          [reduce using rule 11 (primary_expression)]
+    CONCAT          [reduce using rule 16 (concat_expression)]
+    CONCAT          [reduce using rule 17 (concat_expression)]
+    SEMICOLON       reduce using rule 11 (primary_expression)
+    SEMICOLON       [reduce using rule 16 (concat_expression)]
+    SEMICOLON       [reduce using rule 17 (concat_expression)]
+    SUB             reduce using rule 11 (primary_expression)
+    SUB             [reduce using rule 16 (concat_expression)]
+    SUB             [reduce using rule 17 (concat_expression)]
+    ADD             reduce using rule 11 (primary_expression)
+    ADD             [reduce using rule 16 (concat_expression)]
+    ADD             [reduce using rule 17 (concat_expression)]
+    POW             reduce using rule 11 (primary_expression)
+    POW             [reduce using rule 16 (concat_expression)]
+    POW             [reduce using rule 17 (concat_expression)]
+    AND             reduce using rule 11 (primary_expression)
+    AND             [reduce using rule 16 (concat_expression)]
+    AND             [reduce using rule 17 (concat_expression)]
+    XOR             reduce using rule 11 (primary_expression)
+    XOR             [reduce using rule 16 (concat_expression)]
+    XOR             [reduce using rule 17 (concat_expression)]
+    OR              reduce using rule 11 (primary_expression)
+    OR              [reduce using rule 16 (concat_expression)]
+    OR              [reduce using rule 17 (concat_expression)]
+    MOD             reduce using rule 11 (primary_expression)
+    MOD             [reduce using rule 16 (concat_expression)]
+    MOD             [reduce using rule 17 (concat_expression)]
+    DIV             reduce using rule 11 (primary_expression)
+    DIV             [reduce using rule 16 (concat_expression)]
+    DIV             [reduce using rule 17 (concat_expression)]
+    MUL             reduce using rule 11 (primary_expression)
+    MUL             [reduce using rule 16 (concat_expression)]
+    MUL             [reduce using rule 17 (concat_expression)]
+    INT             reduce using rule 11 (primary_expression)
+    INT             [reduce using rule 16 (concat_expression)]
+    INT             [reduce using rule 17 (concat_expression)]
+    FLOAT           reduce using rule 11 (primary_expression)
+    FLOAT           [reduce using rule 16 (concat_expression)]
+    FLOAT           [reduce using rule 17 (concat_expression)]
+    STRING          reduce using rule 11 (primary_expression)
+    STRING          [reduce using rule 16 (concat_expression)]
+    STRING          [reduce using rule 17 (concat_expression)]
+    STRING_LITERAL  reduce using rule 11 (primary_expression)
+    STRING_LITERAL  [reduce using rule 16 (concat_expression)]
+    STRING_LITERAL  [reduce using rule 17 (concat_expression)]
+    TOKEN_ID        reduce using rule 11 (primary_expression)
+    TOKEN_ID        [reduce using rule 16 (concat_expression)]
+    TOKEN_ID        [reduce using rule 17 (concat_expression)]
+    $default        reduce using rule 11 (primary_expression)
+
+
+state 181
+
+   73 unary_expression: SYSCALL LPAREN expression RPAREN .
+
+    $default  reduce using rule 73 (unary_expression)
+
+
+state 182
+
+   13 primary_expression: LPAREN expression RPAREN .
+   70 unary_expression: PRINTLN LPAREN expression RPAREN .
+
+    SYSCALL         reduce using rule 13 (primary_expression)
+    SYSCALL         [reduce using rule 70 (unary_expression)]
+    PRINTLN         reduce using rule 13 (primary_expression)
+    PRINTLN         [reduce using rule 70 (unary_expression)]
+    PRINTNL         reduce using rule 13 (primary_expression)
+    PRINTNL         [reduce using rule 70 (unary_expression)]
+    TOKEN_READ      reduce using rule 13 (primary_expression)
+    TOKEN_READ      [reduce using rule 70 (unary_expression)]
+    SQRT            reduce using rule 13 (primary_expression)
+    SQRT            [reduce using rule 70 (unary_expression)]
+    CBRT            reduce using rule 13 (primary_expression)
+    CBRT            [reduce using rule 70 (unary_expression)]
+    COLON           reduce using rule 70 (unary_expression)
+    TERNARY         reduce using rule 13 (primary_expression)
+    TERNARY         [reduce using rule 70 (unary_expression)]
+    OR_OP           reduce using rule 13 (primary_expression)
+    OR_OP           [reduce using rule 70 (unary_expression)]
+    ADD_EQU         reduce using rule 13 (primary_expression)
+    ADD_EQU         [reduce using rule 70 (unary_expression)]
+    MUL_EQU         reduce using rule 13 (primary_expression)
+    MUL_EQU         [reduce using rule 70 (unary_expression)]
+    SUB_EQU         reduce using rule 13 (primary_expression)
+    SUB_EQU         [reduce using rule 70 (unary_expression)]
+    DIV_EQU         reduce using rule 13 (primary_expression)
+    DIV_EQU         [reduce using rule 70 (unary_expression)]
+    R_EQU           reduce using rule 13 (primary_expression)
+    R_EQU           [reduce using rule 70 (unary_expression)]
+    L_EQU           reduce using rule 13 (primary_expression)
+    L_EQU           [reduce using rule 70 (unary_expression)]
+    OR_EQU          reduce using rule 13 (primary_expression)
+    OR_EQU          [reduce using rule 70 (unary_expression)]
+    AND_EQU         reduce using rule 13 (primary_expression)
+    AND_EQU         [reduce using rule 70 (unary_expression)]
+    R_OP            reduce using rule 13 (primary_expression)
+    R_OP            [reduce using rule 70 (unary_expression)]
+    L_OP            reduce using rule 13 (primary_expression)
+    L_OP            [reduce using rule 70 (unary_expression)]
+    AND_OP          reduce using rule 13 (primary_expression)
+    AND_OP          [reduce using rule 70 (unary_expression)]
+    GEQU            reduce using rule 13 (primary_expression)
+    GEQU            [reduce using rule 70 (unary_expression)]
+    LEQU            reduce using rule 13 (primary_expression)
+    LEQU            [reduce using rule 70 (unary_expression)]
+    DEC             reduce using rule 13 (primary_expression)
+    DEC             [reduce using rule 70 (unary_expression)]
+    INC             reduce using rule 13 (primary_expression)
+    INC             [reduce using rule 70 (unary_expression)]
+    LTHAN           reduce using rule 13 (primary_expression)
+    LTHAN           [reduce using rule 70 (unary_expression)]
+    TRUE            reduce using rule 13 (primary_expression)
+    TRUE            [reduce using rule 70 (unary_expression)]
+    FALSE           reduce using rule 13 (primary_expression)
+    FALSE           [reduce using rule 70 (unary_expression)]
+    GTHAN           reduce using rule 13 (primary_expression)
+    GTHAN           [reduce using rule 70 (unary_expression)]
+    EQ_OP           reduce using rule 13 (primary_expression)
+    EQ_OP           [reduce using rule 70 (unary_expression)]
+    TO_STRING       reduce using rule 13 (primary_expression)
+    TO_STRING       [reduce using rule 70 (unary_expression)]
+    TO_INT          reduce using rule 13 (primary_expression)
+    TO_INT          [reduce using rule 70 (unary_expression)]
+    NE_OP           reduce using rule 13 (primary_expression)
+    NE_OP           [reduce using rule 70 (unary_expression)]
+    LPAREN          reduce using rule 13 (primary_expression)
+    LPAREN          [reduce using rule 70 (unary_expression)]
+    RPAREN          reduce using rule 70 (unary_expression)
+    CONCAT          reduce using rule 13 (primary_expression)
+    CONCAT          [reduce using rule 70 (unary_expression)]
+    SEMICOLON       reduce using rule 70 (unary_expression)
+    SUB             reduce using rule 13 (primary_expression)
+    SUB             [reduce using rule 70 (unary_expression)]
+    ADD             reduce using rule 13 (primary_expression)
+    ADD             [reduce using rule 70 (unary_expression)]
+    POW             reduce using rule 13 (primary_expression)
+    POW             [reduce using rule 70 (unary_expression)]
+    AND             reduce using rule 13 (primary_expression)
+    AND             [reduce using rule 70 (unary_expression)]
+    XOR             reduce using rule 13 (primary_expression)
+    XOR             [reduce using rule 70 (unary_expression)]
+    OR              reduce using rule 13 (primary_expression)
+    OR              [reduce using rule 70 (unary_expression)]
+    MOD             reduce using rule 13 (primary_expression)
+    MOD             [reduce using rule 70 (unary_expression)]
+    DIV             reduce using rule 13 (primary_expression)
+    DIV             [reduce using rule 70 (unary_expression)]
+    MUL             reduce using rule 13 (primary_expression)
+    MUL             [reduce using rule 70 (unary_expression)]
+    INT             reduce using rule 13 (primary_expression)
+    INT             [reduce using rule 70 (unary_expression)]
+    FLOAT           reduce using rule 13 (primary_expression)
+    FLOAT           [reduce using rule 70 (unary_expression)]
+    STRING          reduce using rule 13 (primary_expression)
+    STRING          [reduce using rule 70 (unary_expression)]
+    STRING_LITERAL  reduce using rule 13 (primary_expression)
+    STRING_LITERAL  [reduce using rule 70 (unary_expression)]
+    TOKEN_ID        reduce using rule 70 (unary_expression)
+    $default        reduce using rule 13 (primary_expression)
+
+
+state 183
+
+   72 unary_expression: PRINTNL LPAREN expression RPAREN .
+
+    $default  reduce using rule 72 (unary_expression)
+
+
+state 184
+
+   84 loop_statement: WHILE LPAREN expression RPAREN . compound_statement
+
+    TOKEN_BEGIN     shift, and go to state 202
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    statement                  go to state 203
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    compound_statement         go to state 204
+    jump_statement             go to state 52
+    declaration                go to state 53
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 185
+
+   82 if_statement: IF LPAREN expression RPAREN . compound_statement
+   83             | IF LPAREN expression RPAREN . compound_statement ELSE compound_statement
+
+    TOKEN_BEGIN     shift, and go to state 202
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    statement                  go to state 203
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    compound_statement         go to state 205
+    jump_statement             go to state 52
+    declaration                go to state 53
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 186
+
+   75 unary_expression: TOKEN_READ LPAREN TYPE_BYTE RPAREN .
+
+    $default  reduce using rule 75 (unary_expression)
+
+
+state 187
+
+   76 unary_expression: TOKEN_READ LPAREN TYPE_SHORT RPAREN .
+
+    $default  reduce using rule 76 (unary_expression)
+
+
+state 188
+
+   74 unary_expression: TOKEN_READ LPAREN TYPE_INT RPAREN .
+
+    $default  reduce using rule 74 (unary_expression)
+
+
+state 189
+
+   77 unary_expression: TOKEN_READ LPAREN TYPE_LONG RPAREN .
+   78                 | TOKEN_READ LPAREN TYPE_LONG RPAREN .
+
+    SYSCALL         reduce using rule 77 (unary_expression)
+    SYSCALL         [reduce using rule 78 (unary_expression)]
+    PRINTLN         reduce using rule 77 (unary_expression)
+    PRINTLN         [reduce using rule 78 (unary_expression)]
+    PRINTNL         reduce using rule 77 (unary_expression)
+    PRINTNL         [reduce using rule 78 (unary_expression)]
+    TOKEN_READ      reduce using rule 77 (unary_expression)
+    TOKEN_READ      [reduce using rule 78 (unary_expression)]
+    SQRT            reduce using rule 77 (unary_expression)
+    SQRT            [reduce using rule 78 (unary_expression)]
+    CBRT            reduce using rule 77 (unary_expression)
+    CBRT            [reduce using rule 78 (unary_expression)]
+    COLON           reduce using rule 77 (unary_expression)
+    COLON           [reduce using rule 78 (unary_expression)]
+    TERNARY         reduce using rule 77 (unary_expression)
+    TERNARY         [reduce using rule 78 (unary_expression)]
+    OR_OP           reduce using rule 77 (unary_expression)
+    OR_OP           [reduce using rule 78 (unary_expression)]
+    ADD_EQU         reduce using rule 77 (unary_expression)
+    ADD_EQU         [reduce using rule 78 (unary_expression)]
+    MUL_EQU         reduce using rule 77 (unary_expression)
+    MUL_EQU         [reduce using rule 78 (unary_expression)]
+    SUB_EQU         reduce using rule 77 (unary_expression)
+    SUB_EQU         [reduce using rule 78 (unary_expression)]
+    DIV_EQU         reduce using rule 77 (unary_expression)
+    DIV_EQU         [reduce using rule 78 (unary_expression)]
+    R_EQU           reduce using rule 77 (unary_expression)
+    R_EQU           [reduce using rule 78 (unary_expression)]
+    L_EQU           reduce using rule 77 (unary_expression)
+    L_EQU           [reduce using rule 78 (unary_expression)]
+    OR_EQU          reduce using rule 77 (unary_expression)
+    OR_EQU          [reduce using rule 78 (unary_expression)]
+    AND_EQU         reduce using rule 77 (unary_expression)
+    AND_EQU         [reduce using rule 78 (unary_expression)]
+    R_OP            reduce using rule 77 (unary_expression)
+    R_OP            [reduce using rule 78 (unary_expression)]
+    L_OP            reduce using rule 77 (unary_expression)
+    L_OP            [reduce using rule 78 (unary_expression)]
+    AND_OP          reduce using rule 77 (unary_expression)
+    AND_OP          [reduce using rule 78 (unary_expression)]
+    GEQU            reduce using rule 77 (unary_expression)
+    GEQU            [reduce using rule 78 (unary_expression)]
+    LEQU            reduce using rule 77 (unary_expression)
+    LEQU            [reduce using rule 78 (unary_expression)]
+    DEC             reduce using rule 77 (unary_expression)
+    DEC             [reduce using rule 78 (unary_expression)]
+    INC             reduce using rule 77 (unary_expression)
+    INC             [reduce using rule 78 (unary_expression)]
+    LTHAN           reduce using rule 77 (unary_expression)
+    LTHAN           [reduce using rule 78 (unary_expression)]
+    TRUE            reduce using rule 77 (unary_expression)
+    TRUE            [reduce using rule 78 (unary_expression)]
+    FALSE           reduce using rule 77 (unary_expression)
+    FALSE           [reduce using rule 78 (unary_expression)]
+    GTHAN           reduce using rule 77 (unary_expression)
+    GTHAN           [reduce using rule 78 (unary_expression)]
+    EQ_OP           reduce using rule 77 (unary_expression)
+    EQ_OP           [reduce using rule 78 (unary_expression)]
+    TO_STRING       reduce using rule 77 (unary_expression)
+    TO_STRING       [reduce using rule 78 (unary_expression)]
+    TO_INT          reduce using rule 77 (unary_expression)
+    TO_INT          [reduce using rule 78 (unary_expression)]
+    NE_OP           reduce using rule 77 (unary_expression)
+    NE_OP           [reduce using rule 78 (unary_expression)]
+    LPAREN          reduce using rule 77 (unary_expression)
+    LPAREN          [reduce using rule 78 (unary_expression)]
+    RPAREN          reduce using rule 77 (unary_expression)
+    RPAREN          [reduce using rule 78 (unary_expression)]
+    CONCAT          reduce using rule 77 (unary_expression)
+    CONCAT          [reduce using rule 78 (unary_expression)]
+    SEMICOLON       reduce using rule 77 (unary_expression)
+    SEMICOLON       [reduce using rule 78 (unary_expression)]
+    SUB             reduce using rule 77 (unary_expression)
+    SUB             [reduce using rule 78 (unary_expression)]
+    ADD             reduce using rule 77 (unary_expression)
+    ADD             [reduce using rule 78 (unary_expression)]
+    POW             reduce using rule 77 (unary_expression)
+    POW             [reduce using rule 78 (unary_expression)]
+    AND             reduce using rule 77 (unary_expression)
+    AND             [reduce using rule 78 (unary_expression)]
+    XOR             reduce using rule 77 (unary_expression)
+    XOR             [reduce using rule 78 (unary_expression)]
+    OR              reduce using rule 77 (unary_expression)
+    OR              [reduce using rule 78 (unary_expression)]
+    MOD             reduce using rule 77 (unary_expression)
+    MOD             [reduce using rule 78 (unary_expression)]
+    DIV             reduce using rule 77 (unary_expression)
+    DIV             [reduce using rule 78 (unary_expression)]
+    MUL             reduce using rule 77 (unary_expression)
+    MUL             [reduce using rule 78 (unary_expression)]
+    INT             reduce using rule 77 (unary_expression)
+    INT             [reduce using rule 78 (unary_expression)]
+    FLOAT           reduce using rule 77 (unary_expression)
+    FLOAT           [reduce using rule 78 (unary_expression)]
+    STRING          reduce using rule 77 (unary_expression)
+    STRING          [reduce using rule 78 (unary_expression)]
+    STRING_LITERAL  reduce using rule 77 (unary_expression)
+    STRING_LITERAL  [reduce using rule 78 (unary_expression)]
+    TOKEN_ID        reduce using rule 77 (unary_expression)
+    TOKEN_ID        [reduce using rule 78 (unary_expression)]
+    $default        reduce using rule 77 (unary_expression)
+
+
+state 190
+
+  119 string: TOKEN_READ LPAREN TYPE_STRING RPAREN .
+
+    $default  reduce using rule 119 (string)
+
+
+state 191
+
+   96 declaration_specifiers: VAR LTHAN declaration_specifiers GTHAN . TOKEN_ID
+
+    TOKEN_ID  shift, and go to state 206
+
+
+state 192
+
+   19 concat_expression: expression . CONCAT string
+   97 declaration_specifiers: VAR TOKEN_ID EQUAL expression .
+
+    CONCAT  shift, and go to state 80
+
+    $default  reduce using rule 97 (declaration_specifiers)
+
+
+state 193
+
+   68 unary_expression: SQRT LPAREN expression RPAREN .
+
+    $default  reduce using rule 68 (unary_expression)
+
+
+state 194
+
+   69 unary_expression: CBRT LPAREN expression RPAREN .
+
+    $default  reduce using rule 69 (unary_expression)
+
+
+state 195
+
+  117 string: TO_STRING LPAREN expression RPAREN .
+
+    $default  reduce using rule 117 (string)
+
+
+state 196
+
+   67 unary_expression: TO_INT LPAREN expression RPAREN .
+
+    $default  reduce using rule 67 (unary_expression)
+
+
+state 197
+
+  118 string: TOKEN_READ LPAREN . RPAREN
+  119       | TOKEN_READ LPAREN . TYPE_STRING RPAREN
+
+    TYPE_STRING  shift, and go to state 134
+    RPAREN       shift, and go to state 135
+
+
+state 198
+
+   33 conditional_expression: logical_or_expression TERNARY expression COLON . expression
+
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    TOKEN_READ      shift, and go to state 8
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    primary_expression         go to state 33
+    expression                 go to state 207
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 199
+
+  104 direct_declarator: LPAREN direct_declarator RPAREN .
+
+    $default  reduce using rule 104 (direct_declarator)
+
+
+state 200
+
+  109 initializer: assignment_expression .
+
+    $default  reduce using rule 109 (initializer)
+
+
+state 201
+
+  108 init_declarator: direct_declarator EQ_OP initializer .
+
+    $default  reduce using rule 108 (init_declarator)
+
+
+state 202
+
+   86 compound_statement: TOKEN_BEGIN . TOKEN_END
+   87                   | TOKEN_BEGIN . statement_list TOKEN_END
+   88                   | TOKEN_BEGIN . declaration_list TOKEN_END
+   89                   | TOKEN_BEGIN . declaration_list statement_list TOKEN_END
+
+    TOKEN_END       shift, and go to state 208
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    statement                  go to state 30
+    statement_list             go to state 209
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    jump_statement             go to state 52
+    declaration                go to state 210
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    declaration_list           go to state 211
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 203
+
+   85 compound_statement: statement .
+
+    $default  reduce using rule 85 (compound_statement)
+
+
+state 204
+
+   84 loop_statement: WHILE LPAREN expression RPAREN compound_statement .
+
+    $default  reduce using rule 84 (loop_statement)
+
+
+state 205
+
+   82 if_statement: IF LPAREN expression RPAREN compound_statement .
+   83             | IF LPAREN expression RPAREN compound_statement . ELSE compound_statement
+
+    ELSE  shift, and go to state 212
+
+    ELSE      [reduce using rule 82 (if_statement)]
+    $default  reduce using rule 82 (if_statement)
+
+
+state 206
+
+   96 declaration_specifiers: VAR LTHAN declaration_specifiers GTHAN TOKEN_ID .
+
+    $default  reduce using rule 96 (declaration_specifiers)
+
+
+state 207
+
+   19 concat_expression: expression . CONCAT string
+   33 conditional_expression: logical_or_expression TERNARY expression COLON expression .
+
+    CONCAT  shift, and go to state 80
+
+    CONCAT    [reduce using rule 33 (conditional_expression)]
+    $default  reduce using rule 33 (conditional_expression)
+
+
+state 208
+
+   86 compound_statement: TOKEN_BEGIN TOKEN_END .
+
+    $default  reduce using rule 86 (compound_statement)
+
+
+state 209
+
+    8 statement_list: statement_list . statement
+   87 compound_statement: TOKEN_BEGIN statement_list . TOKEN_END
+
+    TOKEN_END       shift, and go to state 213
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    statement                  go to state 79
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    jump_statement             go to state 52
+    declaration                go to state 53
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 210
+
+    4 statement: declaration .
+  105 declaration_list: declaration .
+
+    TOKEN_END       reduce using rule 4 (statement)
+    TOKEN_END       [reduce using rule 105 (declaration_list)]
+    SYSCALL         reduce using rule 4 (statement)
+    SYSCALL         [reduce using rule 105 (declaration_list)]
+    PRINTLN         reduce using rule 4 (statement)
+    PRINTLN         [reduce using rule 105 (declaration_list)]
+    PRINTNL         reduce using rule 4 (statement)
+    PRINTNL         [reduce using rule 105 (declaration_list)]
+    WHILE           reduce using rule 4 (statement)
+    WHILE           [reduce using rule 105 (declaration_list)]
+    BREAK           reduce using rule 4 (statement)
+    BREAK           [reduce using rule 105 (declaration_list)]
+    CONTINUE        reduce using rule 4 (statement)
+    CONTINUE        [reduce using rule 105 (declaration_list)]
+    IF              reduce using rule 4 (statement)
+    IF              [reduce using rule 105 (declaration_list)]
+    TOKEN_READ      reduce using rule 4 (statement)
+    TOKEN_READ      [reduce using rule 105 (declaration_list)]
+    VAR             reduce using rule 4 (statement)
+    VAR             [reduce using rule 105 (declaration_list)]
+    SQRT            reduce using rule 4 (statement)
+    SQRT            [reduce using rule 105 (declaration_list)]
+    CBRT            reduce using rule 4 (statement)
+    CBRT            [reduce using rule 105 (declaration_list)]
+    TYPE_BYTE       reduce using rule 4 (statement)
+    TYPE_BYTE       [reduce using rule 105 (declaration_list)]
+    TYPE_SHORT      reduce using rule 4 (statement)
+    TYPE_SHORT      [reduce using rule 105 (declaration_list)]
+    TYPE_INT        reduce using rule 4 (statement)
+    TYPE_INT        [reduce using rule 105 (declaration_list)]
+    TYPE_LONG       reduce using rule 4 (statement)
+    TYPE_LONG       [reduce using rule 105 (declaration_list)]
+    TYPE_STRING     reduce using rule 4 (statement)
+    TYPE_STRING     [reduce using rule 105 (declaration_list)]
+    DEC             reduce using rule 4 (statement)
+    DEC             [reduce using rule 105 (declaration_list)]
+    INC             reduce using rule 4 (statement)
+    INC             [reduce using rule 105 (declaration_list)]
+    TRUE            reduce using rule 4 (statement)
+    TRUE            [reduce using rule 105 (declaration_list)]
+    FALSE           reduce using rule 4 (statement)
+    FALSE           [reduce using rule 105 (declaration_list)]
+    TO_STRING       reduce using rule 4 (statement)
+    TO_STRING       [reduce using rule 105 (declaration_list)]
+    TO_INT          reduce using rule 4 (statement)
+    TO_INT          [reduce using rule 105 (declaration_list)]
+    LPAREN          reduce using rule 4 (statement)
+    LPAREN          [reduce using rule 105 (declaration_list)]
+    SEMICOLON       reduce using rule 4 (statement)
+    SEMICOLON       [reduce using rule 105 (declaration_list)]
+    INT             reduce using rule 4 (statement)
+    INT             [reduce using rule 105 (declaration_list)]
+    FLOAT           reduce using rule 4 (statement)
+    FLOAT           [reduce using rule 105 (declaration_list)]
+    STRING          reduce using rule 4 (statement)
+    STRING          [reduce using rule 105 (declaration_list)]
+    STRING_LITERAL  reduce using rule 4 (statement)
+    STRING_LITERAL  [reduce using rule 105 (declaration_list)]
+    $default        reduce using rule 4 (statement)
+
+
+state 211
+
+   88 compound_statement: TOKEN_BEGIN declaration_list . TOKEN_END
+   89                   | TOKEN_BEGIN declaration_list . statement_list TOKEN_END
+  106 declaration_list: declaration_list . declaration
+
+    TOKEN_END       shift, and go to state 214
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    statement                  go to state 30
+    statement_list             go to state 215
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    jump_statement             go to state 52
+    declaration                go to state 216
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 212
+
+   83 if_statement: IF LPAREN expression RPAREN compound_statement ELSE . compound_statement
+
+    TOKEN_BEGIN     shift, and go to state 202
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    statement                  go to state 203
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    compound_statement         go to state 217
+    jump_statement             go to state 52
+    declaration                go to state 53
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 213
+
+   87 compound_statement: TOKEN_BEGIN statement_list TOKEN_END .
+
+    $default  reduce using rule 87 (compound_statement)
+
+
+state 214
+
+   88 compound_statement: TOKEN_BEGIN declaration_list TOKEN_END .
+
+    $default  reduce using rule 88 (compound_statement)
+
+
+state 215
+
+    8 statement_list: statement_list . statement
+   89 compound_statement: TOKEN_BEGIN declaration_list statement_list . TOKEN_END
+
+    TOKEN_END       shift, and go to state 218
+    SYSCALL         shift, and go to state 1
+    PRINTLN         shift, and go to state 2
+    PRINTNL         shift, and go to state 3
+    WHILE           shift, and go to state 4
+    BREAK           shift, and go to state 5
+    CONTINUE        shift, and go to state 6
+    IF              shift, and go to state 7
+    TOKEN_READ      shift, and go to state 8
+    VAR             shift, and go to state 9
+    SQRT            shift, and go to state 10
+    CBRT            shift, and go to state 11
+    TYPE_BYTE       shift, and go to state 12
+    TYPE_SHORT      shift, and go to state 13
+    TYPE_INT        shift, and go to state 14
+    TYPE_LONG       shift, and go to state 15
+    TYPE_STRING     shift, and go to state 16
+    DEC             shift, and go to state 17
+    INC             shift, and go to state 18
+    TRUE            shift, and go to state 19
+    FALSE           shift, and go to state 20
+    TO_STRING       shift, and go to state 21
+    TO_INT          shift, and go to state 22
+    LPAREN          shift, and go to state 23
+    SEMICOLON       shift, and go to state 24
+    INT             shift, and go to state 25
+    FLOAT           shift, and go to state 26
+    STRING          shift, and go to state 27
+    STRING_LITERAL  shift, and go to state 28
+
+    statement                  go to state 79
+    expression_statement       go to state 32
+    primary_expression         go to state 33
+    expression                 go to state 34
+    concat_expression          go to state 35
+    assignment_expression      go to state 36
+    conditional_expression     go to state 37
+    logical_or_expression      go to state 38
+    logical_and_expression     go to state 39
+    inclusive_or_expression    go to state 40
+    exclusive_or_expression    go to state 41
+    and_expression             go to state 42
+    equality_expression        go to state 43
+    relational_expression      go to state 44
+    shift_expression           go to state 45
+    additive_expression        go to state 46
+    multiplicative_expression  go to state 47
+    unary_expression           go to state 48
+    postfix_expression         go to state 49
+    if_statement               go to state 50
+    loop_statement             go to state 51
+    jump_statement             go to state 52
+    declaration                go to state 53
+    declaration_specifiers     go to state 54
+    type_specifier             go to state 55
+    number                     go to state 56
+    string                     go to state 57
+
+
+state 216
+
+    4 statement: declaration .
+  106 declaration_list: declaration_list declaration .
+
+    TOKEN_END       reduce using rule 4 (statement)
+    TOKEN_END       [reduce using rule 106 (declaration_list)]
+    SYSCALL         reduce using rule 4 (statement)
+    SYSCALL         [reduce using rule 106 (declaration_list)]
+    PRINTLN         reduce using rule 4 (statement)
+    PRINTLN         [reduce using rule 106 (declaration_list)]
+    PRINTNL         reduce using rule 4 (statement)
+    PRINTNL         [reduce using rule 106 (declaration_list)]
+    WHILE           reduce using rule 4 (statement)
+    WHILE           [reduce using rule 106 (declaration_list)]
+    BREAK           reduce using rule 4 (statement)
+    BREAK           [reduce using rule 106 (declaration_list)]
+    CONTINUE        reduce using rule 4 (statement)
+    CONTINUE        [reduce using rule 106 (declaration_list)]
+    IF              reduce using rule 4 (statement)
+    IF              [reduce using rule 106 (declaration_list)]
+    TOKEN_READ      reduce using rule 4 (statement)
+    TOKEN_READ      [reduce using rule 106 (declaration_list)]
+    VAR             reduce using rule 4 (statement)
+    VAR             [reduce using rule 106 (declaration_list)]
+    SQRT            reduce using rule 4 (statement)
+    SQRT            [reduce using rule 106 (declaration_list)]
+    CBRT            reduce using rule 4 (statement)
+    CBRT            [reduce using rule 106 (declaration_list)]
+    TYPE_BYTE       reduce using rule 4 (statement)
+    TYPE_BYTE       [reduce using rule 106 (declaration_list)]
+    TYPE_SHORT      reduce using rule 4 (statement)
+    TYPE_SHORT      [reduce using rule 106 (declaration_list)]
+    TYPE_INT        reduce using rule 4 (statement)
+    TYPE_INT        [reduce using rule 106 (declaration_list)]
+    TYPE_LONG       reduce using rule 4 (statement)
+    TYPE_LONG       [reduce using rule 106 (declaration_list)]
+    TYPE_STRING     reduce using rule 4 (statement)
+    TYPE_STRING     [reduce using rule 106 (declaration_list)]
+    DEC             reduce using rule 4 (statement)
+    DEC             [reduce using rule 106 (declaration_list)]
+    INC             reduce using rule 4 (statement)
+    INC             [reduce using rule 106 (declaration_list)]
+    TRUE            reduce using rule 4 (statement)
+    TRUE            [reduce using rule 106 (declaration_list)]
+    FALSE           reduce using rule 4 (statement)
+    FALSE           [reduce using rule 106 (declaration_list)]
+    TO_STRING       reduce using rule 4 (statement)
+    TO_STRING       [reduce using rule 106 (declaration_list)]
+    TO_INT          reduce using rule 4 (statement)
+    TO_INT          [reduce using rule 106 (declaration_list)]
+    LPAREN          reduce using rule 4 (statement)
+    LPAREN          [reduce using rule 106 (declaration_list)]
+    SEMICOLON       reduce using rule 4 (statement)
+    SEMICOLON       [reduce using rule 106 (declaration_list)]
+    INT             reduce using rule 4 (statement)
+    INT             [reduce using rule 106 (declaration_list)]
+    FLOAT           reduce using rule 4 (statement)
+    FLOAT           [reduce using rule 106 (declaration_list)]
+    STRING          reduce using rule 4 (statement)
+    STRING          [reduce using rule 106 (declaration_list)]
+    STRING_LITERAL  reduce using rule 4 (statement)
+    STRING_LITERAL  [reduce using rule 106 (declaration_list)]
+    $default        reduce using rule 4 (statement)
+
+
+state 217
+
+   83 if_statement: IF LPAREN expression RPAREN compound_statement ELSE compound_statement .
+
+    $default  reduce using rule 83 (if_statement)
+
+
+state 218
+
+   89 compound_statement: TOKEN_BEGIN declaration_list statement_list TOKEN_END .
+
+    $default  reduce using rule 89 (compound_statement)
