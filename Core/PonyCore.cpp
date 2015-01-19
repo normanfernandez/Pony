@@ -125,6 +125,69 @@ int to_int(SExpression * exp)
 	}
 }
 
+char *translate(char *string)
+{
+	/*Function source from:
+	 * https://stackoverflow.com/questions/10686022/printing-strings-char-loaded-from-file-without-escaped-special-sequences-lik/10686377#10686377
+	 * Thanks you so much Jerry Coffin! ^^
+	 * */
+      char *here=string;
+      size_t len=strlen(string);
+      int num;
+      int numlen;
+
+      while (NULL!=(here=strchr(here,'\\')))
+      {
+            numlen=1;
+            switch (here[1])
+            {
+            case '\\':
+                  break;
+
+            case 'r':
+                  *here = '\r';
+                  break;
+
+            case 'n':
+                  *here = '\n';
+                  break;
+
+            case 't':
+                  *here = '\t';
+                  break;
+
+            case 'v':
+                  *here = '\v';
+                  break;
+
+            case 'a':
+                  *here = '\a';
+                  break;
+
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+                  numlen = sscanf(here,"%o",&num);
+                  *here = (char)num;
+                  break;
+
+            case 'x':
+                  numlen = sscanf(here,"%x",&num);
+                  *here = (char) num;
+                  break;
+            }
+            num = here - string + numlen;
+            here++;
+            memmove(here,here+numlen,len-num );
+      }
+      return string;
+}
+
 pony_byte byteInput()
 {
 	pony_short a;

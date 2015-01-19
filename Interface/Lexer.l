@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "PonyInt.h"
+#include "PonyCore.h"
 #include "Parser.tab.hh"
 #include "Expression.hpp"
 using namespace std;
@@ -50,7 +51,7 @@ int line_number = 1;
 \"(\\.|[^"])*\"			{ 
 							yylval.sval = strdup(yytext);
 							yylval.sval = strtok(yylval.sval,"\"");
-							yylval.exp = createStr(yylval.sval);
+							yylval.exp = createStr(translate(yylval.sval));
 							return STRING;
 						}
 
