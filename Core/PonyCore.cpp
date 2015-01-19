@@ -11,6 +11,7 @@
 #include "Expression.hpp"
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 #include <sstream>
 #include <string>
 #include <cmath>
@@ -102,6 +103,26 @@ std::string to_string(SExpression * exp)
 		return ss.str();
 	}
 
+}
+
+int to_int(SExpression * exp)
+{
+	if(exp->type == eVALUE)
+	{
+		return exp->value;
+	}
+	else if(exp->isfloat == 1)
+	{
+		return (int)exp->fvalue;
+	}
+	else if(exp->type == eSTRING)
+	{
+		return atoi(exp->str.c_str());
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 pony_byte byteInput()

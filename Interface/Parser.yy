@@ -28,6 +28,7 @@ int yywrap();
 // define the keywords token:
 %token TOKEN_BEGIN
 %token TOKEN_END
+%token SYSCALL
 %token PRINTLN
 %token PRINTNL
 %token WHILE
@@ -80,6 +81,8 @@ int yywrap();
 %token GTHAN
 %token EQ_OP
 %token TO_STRING
+%token TO_INT
+%token SYSTEM
 %token NE_OP
 %token LPAREN
 %token RPAREN
@@ -90,7 +93,8 @@ int yywrap();
 %token WS
 
 %left ADD SUB
-%left MUL DIV MOD BSIZE OR XOR AND POW
+%left MUL DIV MOD OR XOR AND POW
+%left L_OP R_OP
 %right EQUAL
 
 %token <ival> INT
@@ -244,8 +248,10 @@ unary_expression:
 		postfix_expression { $<exp>$ = $<exp>1;}
 	|	INC unary_expression { $<ival>$ = ++$<ival>2; }
 	|	DEC unary_expression { $<ival>$ = --$<ival>2; }
-	|	BSIZE unary_expression
-	|	BSIZE LPAREN type_specifier RPAREN
+	|	TO_INT LPAREN expression RPAREN
+		{
+			$<exp>$ = createNumber(to_int($<exp>3));
+		}
 	|	SQRT LPAREN expression RPAREN 
 		{
 			$<exp>$ = createNumber((int)sqrt(evaluateIntExpression($<exp>3)));
@@ -257,11 +263,18 @@ unary_expression:
 	|	PRINTLN LPAREN expression RPAREN
 		{
 			cout << evaluateExpression($<exp>3) << endl;
+			fflush(stdout);
 			$<exp>$ = createNumber(0);
 		}
 	|	PRINTNL LPAREN expression RPAREN
 		{
 			cout << evaluateExpression($<exp>3);
+			fflush(stdout);
+			$<exp>$ = createNumber(0);
+		}
+	|	SYSCALL LPAREN expression RPAREN
+		{
+			system(evaluateExpression($<exp>3).c_str());
 			$<exp>$ = createNumber(0);
 		}
 	|	TOKEN_READ LPAREN TYPE_INT RPAREN

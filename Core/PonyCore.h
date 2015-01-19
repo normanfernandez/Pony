@@ -32,6 +32,7 @@ pony_short shortInput();
 pony_long longInput();
 char * strInput();
 std::string to_string(SExpression *);
+int to_int(SExpression *);
 std::string evaluateExpression(SExpression *);
 int evaluateIntExpression(SExpression *);
 float evaluateFloatExpression(SExpression *exp);

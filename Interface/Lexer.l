@@ -104,13 +104,14 @@ int line_number = 1;
 "long"					{ yylval.ival = eLONG; return TYPE_LONG; }
 "string"				{ yylval.ival = eSTRING; return TYPE_STRING; }
 "to_string"				{ return TO_STRING; }
+("system")|("console")	{ return SYSCALL; }
+"to_int"				{ return TO_INT; }
 "end"        			{ return TOKEN_END; }
 ("read")|("input")		{ return TOKEN_READ; }
 "while"					{ return WHILE; }
 "for"					{ return FOR;}
 "var"        			{ return VAR; }
 
-"byte_size"				{ return BSIZE; }
 "sqrt"					{ return SQRT; }
 "cbrt"					{ return CBRT; }
 
