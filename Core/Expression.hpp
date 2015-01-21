@@ -6,6 +6,10 @@
 #define __EXPRESSION_H__
 #include <string>
 #include "PonyInt.h"
+#define __setNodesNull(tree)	\
+	tree->left = nullptr;	\
+	tree->right = nullptr;
+
 
 /**
  * @brief The operation type
@@ -44,10 +48,9 @@ typedef struct tagSExpression
 {
     EOperationType type;///< type of operation
     int isfloat;
-    int value;///< valid only when type is eVALUE
-    float fvalue;///< valid only when type is eFLOAT
     std::string str;
-    struct _IntStruct * variable;
+    float fvalue;
+    struct _IntStruct * value;
     struct tagSExpression *left; ///< left side of the tree
     struct tagSExpression *right;///< right side of the tree
 } SExpression;

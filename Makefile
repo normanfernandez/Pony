@@ -7,8 +7,8 @@ default: Parser.tab.cc lex.yy.c PonyCore.o Expression.o
 lex.yy.c:	Interface/Lexer.l 
 		flex -o Obj/lex.yy.c Interface/Lexer.l
  
-Parser.tab.cc:	Interface/Parser.yy
-		bison Interface/Parser.yy -d -o Obj/Parser.tab.cc -v
+Parser.tab.cc:	Interface/Parser.ypp
+		bison Interface/Parser.ypp -d -o Obj/Parser.tab.cc -v
 
 PonyCore.o:	Core/PonyCore.cpp
 		$(CC) -c Core/PonyCore.cpp -o Obj/PonyCore.o

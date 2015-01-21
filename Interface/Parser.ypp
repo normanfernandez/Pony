@@ -400,7 +400,10 @@ init_declarator_list:
 	;
 
 number:
-		INT { $<exp>$ = $<exp>1;}
+		INT 
+		{ 
+			$<exp>$ = $<exp>1;
+		}
 	|	TRUE { $<exp>$ = $<exp>1;}
 	|	FALSE { $<exp>$ = $<exp>1;}
 	|	FLOAT { $<exp>$ = createFloatNumber($<fval>1); }

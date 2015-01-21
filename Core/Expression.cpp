@@ -16,31 +16,26 @@
 #include <cmath>
 #include <cstdio>
 
-
 SExpression *allocateVariable(int num, PonyInt size)
 {
     SExpression *exp = new SExpression;
     exp->type = eIVARIABLE;
-    exp->value = num;
-    exp->variable = new IntegerStruct;
-    exp->variable->size = size;
-    setInteger(&exp->variable, num);
-
-    exp->left = nullptr;
-    exp->right = nullptr;
-
+    exp->value = new IntegerStruct;
+    exp->value->size = size;
+    setInteger(&exp->value, num);
+    __setNodesNull(exp);
     return exp;
 }
 
-SExpression *allocateExpression(int num)
+SExpression *allocateExpression(int num, PonyInt size)
 {
     SExpression *exp = new SExpression;
     exp->type = eVALUE;
-    exp->value = num;
+    exp->value = new IntegerStruct;
+    exp->value->size = size;
+    setInteger(&exp->value, num);
 
-    exp->left = nullptr;
-    exp->right = nullptr;
-
+    __setNodesNull(exp);
     return exp;
 }
 
@@ -49,11 +44,9 @@ SExpression *allocateFloatExpression(float num)
 	SExpression *exp = new SExpression;
     exp->type = eFLOAT;
     exp->fvalue = num;
-    exp->isfloat =1;
+    exp->isfloat = 1;
 
-    exp->left = nullptr;
-    exp->right = nullptr;
-
+    __setNodesNull(exp);
     return exp;
 }
 
@@ -62,35 +55,35 @@ SExpression *allocateExpression(char * str)
     SExpression *exp = new SExpression;
     exp->type = eSTRING;
     exp->str = std::string(str);
-    exp->value = -1;
+    exp->value = nullptr;
 
-    exp->left = nullptr;
-    exp->right = nullptr;
-
+    __setNodesNull(exp);
     return exp;
 }
 
 SExpression *allocateExpression()
 {
-	return allocateExpression(0);
+	return allocateExpression(0, eINT);
+}
+
+SExpression *createNumber(int value, PonyInt type)
+{
+    return allocateExpression(value, type);
 }
 
 SExpression *createNumber(int value)
 {
-    SExpression *exp = allocateExpression((int)value);
-    return exp;
+    return createNumber(value, eINT);
 }
 
 SExpression *createFloatNumber(float value)
 {
-	SExpression *exp = allocateFloatExpression((float)value);
-	return exp;
+	return allocateFloatExpression((float)value);
 }
 
 SExpression *createStr(char * str)
 {
-    SExpression *exp = allocateExpression((char*)str);
-    return exp;
+    return allocateExpression((char*)str);
 }
 
 SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right)
@@ -114,7 +107,7 @@ void deleteExpression(SExpression **exp)
 {
     if (*exp)
         return;
-
+    delete (*exp)->value;
     deleteExpression(&((*exp)->left));
     deleteExpression(&((*exp)->right));
 

@@ -31,10 +31,6 @@ void allocateInteger(const char * var_label,pony_byte size){
 std::string getInteger(IntegerStruct * int_struct){
 	std::ostringstream convert;
 	switch(int_struct->size){
-		case eCHAR:
-			convert << (pony_short)__getChar(int_struct->val);
-		break;
-
 		case eBYTE:
 			convert << (pony_short)__getByte(int_struct->val);
 		break;
@@ -56,11 +52,6 @@ std::string getInteger(IntegerStruct * int_struct){
 
 void setInteger(IntegerStruct ** int_struct, intptr_t num){
 	switch((*int_struct)->size){
-		case eCHAR:
-			(*int_struct)->val = new pony_char;
-			__setByte((*int_struct)->val, num);
-		break;
-
 		case eBYTE:
 			(*int_struct)->val = new pony_byte;
 			__setByte((*int_struct)->val, num);
@@ -96,7 +87,7 @@ std::string to_string(SExpression * exp)
 		return ss.str();
 	}
 	else if(exp->type == eIVARIABLE){
-		return getInteger(exp->variable);
+		return getInteger(exp->value);
 	}
 	else{
 		ss << evaluateIntExpression(exp);
@@ -109,7 +100,7 @@ int to_int(SExpression * exp)
 {
 	if(exp->type == eVALUE)
 	{
-		return exp->value;
+		return __getInt(exp->value);
 	}
 	else if(exp->isfloat == 1)
 	{
@@ -278,7 +269,7 @@ float evaluateFloatExpression(SExpression *exp)
 		case eFLOAT:
 			return exp->fvalue;
 		case eVALUE:
-			return (float)exp->value;
+			return __getInt(exp->value->val);
 
 		default:
 			return -1; //Error happens!
@@ -332,7 +323,7 @@ int evaluateIntExpression(SExpression *exp)
 		case eRIGHTE:
 			return evaluateIntExpression(exp->left) >> evaluateIntExpression(exp->right);
 		case eVALUE:
-			return exp->value;
+			return __getInt(exp->value->val);
 
 		default:
 			return -1; //Error happens!

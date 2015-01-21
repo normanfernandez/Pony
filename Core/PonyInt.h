@@ -11,11 +11,10 @@
 
 //Byte size constants
 enum PonyInt{
-	eCHAR = -1,
-	eBYTE = 1,
-	eSHORT = 2,
-	eINT = 4,
-	eLONG = 8
+	eBYTE ,
+	eSHORT ,
+	eINT ,
+	eLONG ,
 };
 
 typedef unsigned char pony_char;
