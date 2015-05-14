@@ -179,9 +179,9 @@ conditional_expression:
 	|	logical_or_expression TERNARY expression COLON expression 
 		{
 			 if(evaluateIntExpression($<exp>1))
-			 	$<exp>$ = createNumber(evaluateIntExpression($<exp>3));
+			 	$<exp>$ = $<exp>3;
 			 else
-			 	$<exp>$ = createNumber(evaluateIntExpression($<exp>5));
+			 	$<exp>$ = $<exp>5;
 			 
 		}
 	;
@@ -216,6 +216,7 @@ equality_expression:
 	|	equality_expression EQ_OP relational_expression { $<exp>$ = createOperation(eEQUAL, $<exp>1, $<exp>3);  }
 	|	equality_expression NE_OP relational_expression { $<exp>$ = createOperation(eNEQUAL, $<exp>1, $<exp>3);  }
 	;
+	
 relational_expression:
 		shift_expression { $<exp>$ = $<exp>1; }
 	|	relational_expression LTHAN shift_expression { $<exp>$ = createOperation(eLTHAN, $<exp>1, $<exp>3);  }
@@ -305,6 +306,7 @@ unary_expression:
 			$<exp>$ = createNumber(longInput());
 		}
 	;
+	
 unary_operator:
 		AND
 	| 	ADD 
